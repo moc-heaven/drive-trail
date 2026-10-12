@@ -285,7 +285,7 @@ function synthPad(){ // 임시 배경음: 차 소음(저음역)에 묻히지 않
   const iv=setInterval(step,9000);bgmNodes.push({stop(){clearInterval(iv);clearTimeout(bt);}});
 }
 function stopBgm(){bgmNodes.forEach(n=>{try{n.stop()}catch(e){}});bgmNodes=[];}
-function duck(on){if(!ac)return;bgmGain.gain.cancelScheduledValues(ac.currentTime);bgmGain.gain.setTargetAtTime(on?BGM_LEVEL*DUCK:BGM_LEVEL,ac.currentTime,on?.4:1.2);}
+function duck(on){if(!ac||(!on&&!running))return;bgmGain.gain.cancelScheduledValues(ac.currentTime);bgmGain.gain.setTargetAtTime(on?BGM_LEVEL*DUCK:BGM_LEVEL,ac.currentTime,on?.4:1.2);}
 
 async function playNarration(p,onEnd){
   narrating=true;duck(true);
@@ -440,7 +440,9 @@ $('startBtn').onclick=async()=>{
     logLine(`출발: ${T().title}`);
     if(sim.on&&!sim.go){sim.go=true;}
   } else {
-    running=false;sim.go=false;if(ac){bgmGain.gain.setTargetAtTime(0,ac.currentTime,.8);}
+    running=false;sim.go=false;
+    if(ac){bgmGain.gain.cancelScheduledValues(ac.currentTime);bgmGain.gain.setTargetAtTime(0,ac.currentTime,.3);
+      setTimeout(()=>{if(!running){stopBgm();ac.suspend().catch(()=>{});}},1200);} // 소리를 완전히 멈춤
     if('speechSynthesis' in window)speechSynthesis.cancel();if(narrSrc)try{narrSrc.stop()}catch(e){}
     narrating=false;try{wake&&wake.release()}catch(e){}
     $('startBtn').textContent='출발 · 소리 켜기';$('startBtn').classList.add('primary');
