@@ -86,6 +86,14 @@ p{margin:0}
 #scrResume{z-index:9;background:rgba(10,13,12,.94);align-items:center;justify-content:center;text-align:center}
 #scrResume .big{max-width:420px}
 
+/* 모의주행 막대 */
+.simbar{border-top:1px solid var(--line);background:var(--panel);padding:12px 16px;display:flex;flex-direction:column;gap:8px}
+.simbar .row1{display:flex;align-items:baseline;justify-content:space-between}
+.simbar .km{font-family:var(--f-num);color:var(--muted)}.simbar .km b{font-size:1.6rem;color:var(--fg);font-weight:500}
+.simbar input{width:100%;height:32px;accent-color:var(--accent)}
+.simbar .row2{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.simbar button{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 6px;font-size:.9rem}
+.simbar button[aria-pressed=true]{border-color:var(--warn);color:var(--warn)}
 /* 개발용 */
 #dev{position:fixed;right:8px;top:calc(8px + env(safe-area-inset-top,0px));z-index:20;background:rgba(28,36,34,.96);border:1px solid var(--line);border-radius:12px;padding:10px;font-size:12px;width:min(320px,calc(100vw - 16px));display:flex;flex-direction:column;gap:6px}
 #dev .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
@@ -109,6 +117,7 @@ p{margin:0}
   </ol>
   <div class="grow"></div>
   <button class="big" id="btnReady">소리 켜고 준비하기</button>
+  <button class="big ghost" id="btnSim">모의주행으로 시험하기 <small style="color:var(--muted)">(임시)</small></button>
 </section>
 
 <!-- 2. 출발 대기 -->
@@ -134,6 +143,11 @@ p{margin:0}
     </div>
     <div class="layer" id="lyImg"><div id="slides"></div><div class="cap"><div class="t" id="imgCap"></div></div></div>
     <div class="layer arrowL" id="lyArrow"><svg id="arrowSvg" viewBox="0 0 200 200" aria-hidden="true"></svg><div class="t" id="arrowT"></div><div class="s" id="arrowS"></div></div>
+  </div>
+  <div class="simbar" id="simBar" hidden>
+    <div class="row1"><span class="eyebrow" style="color:var(--accent)">모의주행</span><span class="km"><b id="sbKmh">40</b> km/h</span></div>
+    <input type="range" id="sbSpd" min="0" max="80" step="5" value="40" aria-label="모의주행 속도">
+    <div class="row2"><button id="sbGo">❚❚ 멈춤</button><button id="sbOff">길 벗어나기</button><button id="sbSkip">+200m</button></div>
   </div>
   <div class="bar"><span class="dot" id="barDot"></span><span id="barTxt">위치 확인 중</span><span class="sp" id="barSpd"></span></div>
 </section>
@@ -219,7 +233,7 @@ async function loadCourse(){
   const c=idx.courses.find(x=>x.id===want)||idx.courses[0];
   C=await (await fetch('trails/'+c.file,{cache:'no-cache'})).json();
   R=C.route.map(r=>({lat:r[0],lng:r[1]}));CUM=[0];for(let i=1;i<R.length;i++)CUM.push(CUM[i-1]+dist(R[i-1],R[i]));LEN=CUM[CUM.length-1];
-  C.points.forEach(p=>{p.s=project(p).s;p.dur=est(p.script);p.st='wait';});
+  C.points.forEach(p=>{p.s=project(p).s;p.dur=p.audioDur||est(p.script);p.st='wait';});
   const name=C.title.split('·');
   $('rTitle').textContent=(name[1]||C.title).trim();$('wCourse').textContent=name[0].trim();$('dTitle').textContent=(name[1]||C.title).trim();
   $('jFrom').textContent=C.origin?.name||'';$('jTo').textContent=C.dest?.name||'';
@@ -332,7 +346,7 @@ function tick(){
     else if(S>=start&&!narr){
       p.st='play';log(`재생 ${p.title} @${Math.round(S)}m ${Math.round(v*3.6)}km/h`);
       showScreen(p);p.mk.classList.add('done');
-      playLine(p,()=>{p.st='done';afterLine(p);});
+      playLine(p,()=>{p.st='done';log(`끝 ${p.title} @${Math.round(S)}m (기준 ${Math.round(p.s)}m)`);afterLine(p);});
     }
   }
   // 도착: 목적지 근처에서 멈추면
@@ -384,7 +398,7 @@ document.querySelector('.navs').addEventListener('click',e=>{
 });
 function setOff(on){
   offRoute=on;offSince=0;backSince=0;$('scrOff').hidden=!on;log(on?'경로 이탈':'경로 복귀');
-  if(on&&!narr){narr={p:{}};duck(true);speak(C.offRoute?.say||'길이 조금 엇갈린 것 같아요. 안전한 곳에 잠시 멈춘 뒤 화면을 봐 주세요.',()=>{narr=null;duck(false);});}
+  if(on&&!narr)playLine({script:C.offRoute?.say||'길이 조금 엇갈린 것 같아요. 안전한 곳에 잠시 멈춘 뒤 화면을 봐 주세요.',audio:C.offRoute?.audio},null);
 }
 function openArrive(fromLine){
   if(phase==='arrived'||phase==='ended')return;
@@ -422,8 +436,16 @@ document.addEventListener('visibilitychange',async()=>{
 $('btnResume').onclick=async()=>{try{await ac.resume();}catch(e){}$('scrResume').hidden=true;keepAwake();};
 
 /* ---------- 시작 ---------- */
-$('btnReady').onclick=async()=>{
-  audioInit();await ac.resume();startBgm();keepAwake();gpsOn();
+let SIMMODE=false,simLoopOn=false;
+function startSimLoop(){if(!simLoopOn){simLoopOn=true;requestAnimationFrame(simLoop);}}
+$('btnSim').onclick=()=>{SIMMODE=true;sim.on=true;sim.s=0;sim.go=false;sim.kmh=+$('sbSpd').value;startSimLoop();prepare();};
+$('btnReady').onclick=()=>prepare();
+$('sbSpd').oninput=e=>{sim.kmh=+e.target.value;$('sbKmh').textContent=sim.kmh;};
+$('sbGo').onclick=()=>{sim.go=!sim.go;$('sbGo').textContent=sim.go?'❚❚ 멈춤':'▶ 달리기';};
+$('sbOff').onclick=()=>{sim.off=sim.off?0:150;$('sbOff').setAttribute('aria-pressed',!!sim.off);$('sbOff').textContent=sim.off?'코스로 돌아오기':'길 벗어나기';};
+$('sbSkip').onclick=()=>{sim.s=Math.min(LEN,sim.s+200);};
+async function prepare(){
+  audioInit();await ac.resume();startBgm();keepAwake();if(!SIMMODE)gpsOn();
   C.points.forEach(p=>{if(p.audio)getBuf(p.audio).then(b=>{p.dur=b.duration;}).catch(()=>{});});
   (C.points.map(p=>p.screen&&p.screen.images||[]).flat()).concat(C.dest?.arrive?.photo||[]).forEach(u=>{const i=new Image();i.src=u;});
   phase='wait';show('scrWait');updateGpsChip();
@@ -431,6 +453,7 @@ $('btnReady').onclick=async()=>{
 $('btnGo').onclick=async()=>{
   try{await ac.resume();}catch(e){}keepAwake();
   armed=true;phase='drive';show('scrDrive');log('출발 버튼');if(pos)tick();
+  if(SIMMODE){$('simBar').hidden=false;sim.go=true;$('sbGo').textContent='❚❚ 멈춤';}
 };
 
 /* ---------- 개발: 시뮬레이션 ---------- */
@@ -452,7 +475,7 @@ if(DEV){
   $('dShowOff').onclick=()=>{const h=$('scrOff').hidden;$('scrOff').hidden=!h;$('dShowOff').textContent=h?'이탈 화면 닫기':'이탈 화면 바로 보기';};
   $('dShowArr').onclick=()=>{const h=$('scrArrive').hidden;$('scrArrive').hidden=!h;$('dShowArr').textContent=h?'도착 화면 닫기':'도착 화면 바로 보기';};
   $('dSpd').oninput=e=>{sim.kmh=+e.target.value;$('dSpdL').textContent=sim.kmh;};
-  requestAnimationFrame(simLoop);
+  startSimLoop();
 }
 window.__dt={get S(){return S},get phase(){return phase},get pts(){return C.points.map(p=>p.title+':'+p.st)},get off(){return offRoute},sim};
 
