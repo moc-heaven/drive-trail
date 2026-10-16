@@ -9,7 +9,9 @@
 - 출발 전 '출발 · 소리 켜기'를 한 번 누르고, 화면을 켠 채 거치대에 둡니다.
 
 ## 폴더
-- `index.html` 앱 본체
+- `index.html` 참여자용 화면 (QR로 여는 페이지). 끝에 `?dev`를 붙이면 가상 주행 도구가 나옴
+- `studio.html` 현장 기록 도구 (경로·지점 기록, 내보내기)
+- `map.html` 코스 검토 지도
 - `trails/index.json` 코스 목록
 - `trails/c1.json`, `trails/c2.json` 코스별 지점, 대본, 도착 시점, 음원·이미지 경로
 - `audio/` 배경음악과 나레이션 (mp3 권장)

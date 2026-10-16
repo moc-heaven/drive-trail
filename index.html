@@ -1,647 +1,444 @@
 <!doctype html>
-<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>[hidden]{display:none!important}img{max-width:100%}</style></head><body>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#141a19">
+<meta name="apple-mobile-web-app-capable" content="yes">
 <title>별씨 드라이브 트레일</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Gowun+Batang:wght@400;700&family=IBM+Plex+Sans+KR:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: 한 화면 앱. 위=이미지 무대(동승자용), 아래=상태와 조작. 차 안에서 쓰므로 어두운 단일 테마로 고정 */
+/* 한 화면 앱. 차 안 거치 기준: 어두운 바탕, 큰 글씨, 누를 것은 한 화면에 하나 */
 :root{
-  --bg:#141a19;        /* 현무암 밤 */
-  --panel:#1c2422;
-  --line:#2c3633;
-  --fg:#ebe6d8;        /* 귤꽃 흰빛 */
-  --muted:#93a099;
-  --accent:#e6a23c;    /* 감귤 */
-  --leaf:#86a77f;      /* 귤잎 */
-  --warn:#d9775b;
+  --bg:#141a19;--panel:#1c2422;--line:#2c3633;--fg:#ebe6d8;--muted:#93a099;
+  --accent:#e6a23c;--leaf:#86a77f;--warn:#d9775b;--ink:#1d1406;
   --f-display:"Gowun Batang","Nanum Myeongjo",serif;
   --f-body:"IBM Plex Sans KR","Apple SD Gothic Neo","Malgun Gothic",sans-serif;
   --f-num:"IBM Plex Mono",ui-monospace,monospace;
   color-scheme:dark;
 }
-html,body{height:100%}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.55;padding-inline:16px;padding-block:12px 32px;-webkit-tap-highlight-color:transparent}
-.wrap{max-width:560px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
-header{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.brand{font-family:var(--f-display);font-size:1.15rem;letter-spacing:.02em}
-.brand small{display:block;font-family:var(--f-body);font-size:.72rem;color:var(--muted);letter-spacing:.08em}
-select,input,textarea,button{font:inherit;color:inherit}
-select,input[type=text],input[type=number],textarea{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:8px 10px;width:100%;min-width:0}
-textarea{resize:vertical;min-height:80px;line-height:1.5}
-button{background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:9px 16px;cursor:pointer}
-button:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-button.primary{background:var(--accent);color:#1d1406;border-color:var(--accent);font-weight:600}
-button.ghost{background:transparent}
-button:disabled{opacity:.45;cursor:default}
-.tabs{display:flex;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:999px;padding:3px}
-.tabs button{border:0;padding:6px 14px;background:transparent;color:var(--muted)}
-.tabs button[aria-selected=true]{background:var(--fg);color:var(--bg)}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:16px;line-height:1.55;-webkit-tap-highlight-color:transparent;overflow:hidden}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.scr{position:fixed;inset:0;display:flex;flex-direction:column;padding:calc(20px + env(safe-area-inset-top,0px)) 20px calc(20px + env(safe-area-inset-bottom,0px));gap:18px}
+.eyebrow{font-size:.78rem;letter-spacing:.14em;color:var(--muted)}
+h1{font-family:var(--f-display);font-weight:400;font-size:clamp(1.7rem,7vw,2.4rem);line-height:1.25;margin:0;text-wrap:balance}
+h2{font-family:var(--f-display);font-weight:400;font-size:1.5rem;margin:0;text-wrap:balance}
+p{margin:0}
+.lead{color:var(--muted);max-width:34em}
+.grow{flex:1}
+.big{width:100%;border:0;border-radius:18px;padding:20px;font-size:1.2rem;font-weight:600;background:var(--accent);color:var(--ink)}
+.big.ghost{background:transparent;border:1px solid var(--line);color:var(--fg);font-weight:500}
+.big:disabled{opacity:.4}
+.steps{display:flex;flex-direction:column;gap:10px;margin:0;padding:0;list-style:none}
+.steps li{display:flex;gap:12px;align-items:flex-start;color:var(--muted)}
+.steps b{font-family:var(--f-num);font-weight:500;color:var(--accent);min-width:1.2em}
+.chips{display:flex;flex-direction:column;gap:10px}
+.chip{display:flex;align-items:center;gap:12px;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px}
+.dot{width:14px;height:14px;border-radius:50%;background:var(--muted);flex:none}
+.chip.ok .dot{background:var(--leaf);box-shadow:0 0 0 4px rgba(134,167,127,.2)}
+.chip.wait .dot{background:var(--accent);animation:pulse 1.2s infinite}
+.chip.bad .dot{background:var(--warn)}
+.chip .t{flex:1}.chip .v{font-family:var(--f-num);color:var(--muted);font-size:.85rem}
+@keyframes pulse{50%{opacity:.35}}
 
-/* 무대 */
-.stage{position:relative;aspect-ratio:4/3;max-width:100%;border-radius:14px;overflow:hidden;background:var(--panel);border:1px solid var(--line)}
-.stage .img{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.6s ease}
-.stage .img.on{opacity:1}
-.stage .idle{position:absolute;inset:0;display:grid;place-items:center;text-align:center;padding:24px;color:var(--muted);font-family:var(--f-display);font-size:1.05rem;transition:opacity 1.2s}
-.stage .idle b{display:block;color:var(--fg);font-size:1.5rem;font-weight:400;margin-bottom:6px;text-wrap:balance}
-.stage .cap{position:absolute;left:0;right:0;bottom:0;padding:40px 18px 16px;background:linear-gradient(transparent,rgba(10,13,12,.85));opacity:0;transition:opacity 1.2s}
-.stage .cap.on{opacity:1}
-.cap .side{display:inline-block;font-size:.78rem;letter-spacing:.06em;color:#1d1406;background:var(--accent);border-radius:999px;padding:2px 10px;margin-bottom:6px}
-.cap .t{font-family:var(--f-display);font-size:1.45rem;line-height:1.3;text-wrap:balance;color:#f3efe4}
-.ph{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--f-display);font-size:2.4rem;color:rgba(235,230,216,.18)}
+/* 주행 화면 */
+#scrDrive{padding:0}
+.stage{position:relative;flex:1;overflow:hidden;background:var(--bg)}
+.layer{position:absolute;inset:0;opacity:0;transition:opacity 1.4s ease;pointer-events:none}
+.layer.on{opacity:1}
+.idle{display:flex;flex-direction:column;justify-content:center;gap:28px;padding:calc(24px + env(safe-area-inset-top,0px)) 28px 24px}
+.idle h2{font-size:1.35rem}
+.journey{position:relative;height:56px}
+.journey .track{position:absolute;left:8px;right:8px;top:27px;height:2px;background:var(--line)}
+.journey .done{position:absolute;left:8px;top:27px;height:2px;background:var(--accent);width:0}
+.journey .mk{position:absolute;top:22px;width:12px;height:12px;margin-left:-6px;border-radius:50%;background:var(--bg);border:2px solid var(--muted)}
+.journey .mk.done{border-color:var(--accent);background:var(--accent)}
+.journey .car{position:absolute;top:15px;width:26px;height:26px;margin-left:-13px;border-radius:50%;background:var(--fg);box-shadow:0 0 0 6px rgba(235,230,216,.12);transition:left 1s linear}
+.journey .lbl{position:absolute;top:44px;font-size:.72rem;color:var(--muted);white-space:nowrap}
+.journey .lbl.r{right:0}
+.slide{position:absolute;inset:0;background-size:cover;background-position:center;opacity:0;transition:opacity 1.6s}
+.slide.on{opacity:1}
+.ph{position:absolute;inset:0;display:grid;place-items:center;background:radial-gradient(120% 90% at 30% 20%,#2f3b34,#121716)}
+.ph span{font-family:var(--f-display);font-size:1.4rem;color:rgba(235,230,216,.35);border:1px dashed rgba(235,230,216,.25);border-radius:12px;padding:10px 16px}
+.cap{position:absolute;left:0;right:0;bottom:0;padding:60px 24px calc(24px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,rgba(10,13,12,.9))}
+.cap .t{font-family:var(--f-display);font-size:clamp(1.5rem,6vw,2rem);line-height:1.3;text-wrap:balance}
+.arrowL{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;background:#0f1413}
+.arrowL svg{width:min(62vw,300px);height:auto}
+.arrowL .t{font-family:var(--f-display);font-size:clamp(2rem,9vw,3rem)}
+.arrowL .s{color:var(--muted)}
+.bar{display:flex;align-items:center;gap:10px;padding:10px 16px calc(10px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:var(--bg);font-size:.8rem;color:var(--muted)}
+.bar .sp{margin-left:auto;font-family:var(--f-num)}
+.bar .dot{width:9px;height:9px}
 
-/* 상태 */
-.status{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
-.stat{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:8px 10px;min-width:0}
-.stat .k{font-size:.7rem;color:var(--muted);letter-spacing:.06em}
-.stat .v{font-family:var(--f-num);font-size:1.05rem;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.stat.wide{grid-column:span 4}
-.stat.wide .v{font-family:var(--f-body);font-size:.95rem}
-@media (max-width:380px){.status{grid-template-columns:repeat(2,minmax(0,1fr))}.stat.wide{grid-column:span 2}}
+/* 덮는 화면 */
+.over{background:var(--bg);z-index:5;overflow:auto}
+.addr{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.addr .n{font-weight:600}.addr .a{color:var(--muted);user-select:all;-webkit-user-select:all}
+.navs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.navs a{display:block;text-align:center;text-decoration:none;color:var(--fg);background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 6px;font-weight:500}
+.photo{position:relative;aspect-ratio:4/3;max-width:100%;border-radius:16px;overflow:hidden;background:var(--panel);flex:none}
+.photo img{width:100%;height:100%;object-fit:cover;display:block}
+#scrResume{z-index:9;background:rgba(10,13,12,.94);align-items:center;justify-content:center;text-align:center}
+#scrResume .big{max-width:420px}
 
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-.row > *{min-width:0}
-.big{width:100%;padding:14px;font-size:1.05rem}
-.panel{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:10px}
-.panel h3{margin:0;font-size:.8rem;color:var(--muted);letter-spacing:.08em;font-weight:500}
-.seg{display:flex;gap:4px}
-.seg button{flex:1;border-radius:8px;padding:8px}
-.seg button[aria-pressed=true]{border-color:var(--accent);color:var(--accent)}
-canvas{width:100%;max-width:100%;aspect-ratio:1/1;display:block;border-radius:10px;background:#111615}
-label.fld{display:flex;flex-direction:column;gap:4px;font-size:.78rem;color:var(--muted);min-width:0;flex:1}
-input[type=range]{width:100%;accent-color:var(--accent)}
-.num{font-family:var(--f-num);font-variant-numeric:tabular-nums}
-.note{font-size:.8rem;color:var(--muted)}
-.note.warn{color:var(--warn)}
-.log{font-family:var(--f-num);font-size:.72rem;color:var(--muted);max-height:140px;overflow:auto;white-space:pre-wrap;margin:0}
-
-.pt{border:1px solid var(--line);border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:8px}
-.pt .hd{display:flex;align-items:center;gap:8px}
-.pt .hd .n{font-family:var(--f-num);color:var(--accent);font-size:.85rem}
-.pt .hd input{flex:1}
-.pt .meta{font-family:var(--f-num);font-size:.72rem;color:var(--muted)}
-.chip{font-size:.72rem;border-radius:999px;padding:1px 8px;border:1px solid var(--line);color:var(--muted)}
-.chip.playing{border-color:var(--accent);color:var(--accent)}
-.chip.done{border-color:var(--leaf);color:var(--leaf)}
-.chip.missed{border-color:var(--warn);color:var(--warn)}
-.rec{color:var(--warn);font-family:var(--f-num)}
-@media (prefers-reduced-motion:reduce){.stage .img,.stage .cap,.stage .idle{transition:none}}
+/* 개발용 */
+#dev{position:fixed;right:8px;top:calc(8px + env(safe-area-inset-top,0px));z-index:20;background:rgba(28,36,34,.96);border:1px solid var(--line);border-radius:12px;padding:10px;font-size:12px;width:min(320px,calc(100vw - 16px));display:flex;flex-direction:column;gap:6px}
+#dev .row{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+#dev button{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:5px 8px}
+#dev pre{margin:0;max-height:120px;overflow:auto;font-family:var(--f-num);font-size:11px;color:var(--muted);white-space:pre-wrap}
+#dev input{width:100%;accent-color:var(--accent)}
+@media (prefers-reduced-motion:reduce){.layer,.slide,.journey .car{transition:none}.chip.wait .dot{animation:none}}
 </style>
+</head>
+<body>
 
-<div class="wrap">
-  <header>
-    <div class="brand">별씨 드라이브 트레일<small>이동 구간 사운드 안내 · 프로토타입</small></div>
-    <div class="tabs" role="tablist">
-      <button id="tabPlay" role="tab" aria-selected="true">주행</button>
-      <button id="tabEdit" role="tab" aria-selected="false">기록</button>
-    </div>
-  </header>
+<!-- 1. 준비 -->
+<section class="scr" id="scrReady">
+  <div class="eyebrow">별씨 드라이브 트레일</div>
+  <h1 id="rTitle">하례 마을길</h1>
+  <p class="lead">이동하는 동안에도 이야기는 이어집니다. 각자의 차 안에서, 길 위의 장소마다 마을의 이야기가 들려요.</p>
+  <ol class="steps">
+    <li><b>1</b><span>아래 버튼을 누르고, 위치 사용을 허용해 주세요.</span></li>
+    <li><b>2</b><span>음악이 들리면 화면을 켠 채로 차에 가져가 거치해 주세요.</span></li>
+    <li><b>3</b><span>출발할 때 '이제 출발'을 한 번 눌러 주세요.</span></li>
+  </ol>
+  <div class="grow"></div>
+  <button class="big" id="btnReady">소리 켜고 준비하기</button>
+</section>
 
-  <select id="courseSel" aria-label="코스 선택"></select>
+<!-- 2. 출발 대기 -->
+<section class="scr" id="scrWait" hidden>
+  <div class="eyebrow" id="wCourse">1코스</div>
+  <h1>준비됐어요</h1>
+  <div class="chips">
+    <div class="chip wait" id="chipGps"><span class="dot"></span><span class="t">위치</span><span class="v" id="gpsV">찾는 중</span></div>
+    <div class="chip ok" id="chipSnd"><span class="dot"></span><span class="t">소리</span><span class="v">켜짐</span></div>
+  </div>
+  <p class="lead">화면을 끄지 말고 차에 거치해 주세요. 소리는 차량 블루투스로 들으면 가장 좋아요.</p>
+  <div class="grow"></div>
+  <button class="big" id="btnGo">이제 출발</button>
+</section>
 
-  <!-- 주행 -->
-  <section id="viewPlay" class="wrap" style="padding:0">
-    <div class="stage" id="stage">
-      <div class="img" id="imgA"></div>
-      <div class="img" id="imgB"></div>
-      <div class="idle" id="idle"><div><b id="idleTitle">하례 마을길</b><span id="idleSub">출발 버튼을 누르면 음악이 시작됩니다</span></div></div>
-      <div class="cap" id="cap"><span class="side" id="capSide">왼쪽</span><div class="t" id="capTitle"></div></div>
+<!-- 3. 주행 -->
+<section class="scr" id="scrDrive" hidden>
+  <div class="stage">
+    <div class="layer idle on" id="lyIdle">
+      <div><div class="eyebrow">지금 가는 길</div><h2 id="dTitle"></h2></div>
+      <div class="journey" id="journey"><div class="track"></div><div class="done" id="jDone"></div><div class="car" id="jCar"></div><span class="lbl" id="jFrom" style="left:0"></span><span class="lbl r" id="jTo"></span></div>
+      <p class="lead" id="dHint">다음 이야기가 다가오면 저절로 들려요.</p>
     </div>
+    <div class="layer" id="lyImg"><div id="slides"></div><div class="cap"><div class="t" id="imgCap"></div></div></div>
+    <div class="layer arrowL" id="lyArrow"><svg id="arrowSvg" viewBox="0 0 200 200" aria-hidden="true"></svg><div class="t" id="arrowT"></div><div class="s" id="arrowS"></div></div>
+  </div>
+  <div class="bar"><span class="dot" id="barDot"></span><span id="barTxt">위치 확인 중</span><span class="sp" id="barSpd"></span></div>
+</section>
 
-    <div class="status">
-      <div class="stat"><div class="k">속도</div><div class="v" id="sSpeed">–</div></div>
-      <div class="stat"><div class="k">다음 지점까지</div><div class="v" id="sDist">–</div></div>
-      <div class="stat"><div class="k">재생 시작 거리</div><div class="v" id="sLead">–</div></div>
-      <div class="stat"><div class="k">GPS 오차</div><div class="v" id="sAcc">–</div></div>
-      <div class="stat wide"><div class="k">다음 이야기</div><div class="v" id="sNext">–</div></div>
-    </div>
+<!-- 4. 경로 이탈 -->
+<section class="scr over" id="scrOff" hidden>
+  <div class="eyebrow" style="color:var(--warn)">코스를 벗어났어요</div>
+  <h1>길이 조금 엇갈렸어요</h1>
+  <p class="lead">운전 중이면 안전한 곳에 먼저 멈춰 주세요. 평소 쓰는 길찾기 앱으로 목적지까지 가실 수 있어요. 코스로 돌아오면 이 화면은 저절로 닫혀요.</p>
+  <div class="addr"><span class="eyebrow">목적지</span><span class="n" id="offName"></span><span class="a" id="offAddr"></span></div>
+  <div class="navs">
+    <a id="navKakao" target="_blank" rel="noopener">카카오맵</a>
+    <a id="navNaver">네이버지도</a>
+    <a id="navTmap">티맵</a>
+  </div>
+  <button class="big" id="btnCopy">주소 복사하기</button>
+  <p class="lead" id="copyNote" aria-live="polite"></p>
+</section>
 
-    <button class="primary big" id="startBtn">출발 · 소리 켜기</button>
+<!-- 5. 도착 -->
+<section class="scr over" id="scrArrive" hidden>
+  <div class="eyebrow" id="aEyebrow">도착</div>
+  <h1 id="aName"></h1>
+  <div class="photo" id="aPhoto"><div class="ph"><span>주차 자리 사진</span></div></div>
+  <p id="aText"></p>
+  <p class="lead" id="aNext"></p>
+  <div class="grow"></div>
+  <button class="big ghost" id="btnEnd">프로그램 종료</button>
+</section>
 
-    <div class="panel">
-      <h3>위치 입력</h3>
-      <div class="seg">
-        <button id="srcGps" aria-pressed="false">실제 GPS</button>
-        <button id="srcSim" aria-pressed="true">책상 시뮬레이션</button>
-      </div>
-      <p class="note" id="srcNote">시뮬레이션은 지도 위 가상 차량이 코스를 달리며 같은 재생 규칙을 시험합니다.</p>
-      <div id="simCtl" class="wrap" style="padding:0;gap:10px">
-        <label class="fld">차량 속도 <span class="num" id="simSpdLbl">35 km/h</span>
-          <input type="range" id="simSpd" min="0" max="70" step="5" value="35">
-        </label>
-        <div class="row">
-          <button id="simGo">달리기</button>
-          <button id="simStop">신호 대기</button>
-          <button class="ghost" id="simReset">처음으로</button>
-        </div>
-      </div>
-      <canvas id="map" width="700" height="700" aria-label="코스 지도"></canvas>
-      <p class="note">점선 원은 지금 속도에서 다음 이야기가 시작될 거리입니다. 속도가 빠를수록 원이 커집니다.</p>
-    </div>
+<!-- 6. 끝 -->
+<section class="scr" id="scrEnd" hidden>
+  <div class="grow"></div>
+  <div class="eyebrow">별씨 드라이브 트레일</div>
+  <h1>함께 달려 주셔서 고마워요</h1>
+  <p class="lead">소리와 위치 사용을 모두 멈췄어요. 이 창은 닫으셔도 됩니다.</p>
+  <div class="grow"></div>
+</section>
 
-    <div class="panel">
-      <h3>재생 기록</h3>
-      <pre class="log" id="log"></pre>
-    </div>
-  </section>
+<!-- 화면이 꺼졌다 켜졌을 때 -->
+<section class="scr" id="scrResume" hidden>
+  <h2>이야기를 이어서 들을까요?</h2>
+  <p class="lead">화면이 꺼지는 동안 소리가 멈췄어요.</p>
+  <button class="big" id="btnResume">눌러서 이어 듣기</button>
+</section>
 
-  <!-- 기록 -->
-  <section id="viewEdit" class="wrap" style="padding:0" hidden>
-    <div class="panel">
-      <h3>기록할 코스</h3>
-      <div class="seg" id="editCourseSeg"></div>
-      <label class="fld">코스 이름<input type="text" id="cTitle"></label>
-      <div class="row" id="gpsWarn" hidden>
-        <p class="note warn" style="margin:0;flex:1">지금은 시뮬레이션 위치예요. 현장 기록은 실제 GPS로 해야 해요.</p>
-        <button class="primary" id="gpsOnBtn">실제 GPS 켜기</button>
-      </div>
-      <p class="note" id="posNote">현재 위치: –</p>
-    </div>
-    <div class="panel">
-      <h3>1 · 경로 기록</h3>
-      <p class="note">출발지에서 <b>경로 기록 시작</b>을 누르고 도착지에서 <b>경로 기록 끝</b>을 누르세요. 달린 길과 속도가 함께 저장돼요. 화면은 켠 채로 두세요.</p>
-      <p class="note" id="trackNote">아직 기록한 경로가 없어요.</p>
-      <div class="row">
-        <button class="primary" id="trackBtn">경로 기록 시작</button>
-        <button class="ghost" id="clearCourse">이 코스 처음부터 다시</button>
-      </div>
-    </div>
-    <div class="panel">
-      <h3>2 · 해설 지점</h3>
-      <p class="note">이야기 대상(소나무 등)이 보이는 자리에서 누르세요. 경로 기록 중에도 누를 수 있어요. 이름과 대본은 나중에 고쳐도 돼요.</p>
-      <button class="primary big" id="addPt">지금 위치에 지점 추가</button>
-    </div>
-    <div id="ptList" class="wrap" style="padding:0;gap:10px"></div>
-    <div class="panel">
-      <h3>트레일 파일 (JSON)</h3>
-      <p class="note">기록 탭에서 고친 내용은 이 폰에만 '초안'으로 저장돼요. 참여자에게 보이게 하려면 내보낸 내용을 Claude에게 전달해 서버에 올리면 됩니다. 녹음 메모와 이미지도 함께 들어갑니다.</p>
-      <textarea id="json" rows="6" spellcheck="false"></textarea>
-      <div class="row">
-        <button class="primary" id="jsonOutAll">모든 코스 내보내기</button>
-        <button id="jsonOut">현재 코스만 내보내기</button>
-        <button id="jsonCopy">복사</button>
-        <button id="jsonIn">붙여넣은 내용 불러오기</button>
-        <button class="ghost" id="resetSample">이 폰의 초안 지우기</button>
-      </div>
-      <p class="note" id="jsonNote"></p>
-    </div>
-  </section>
+<div id="dev" hidden>
+  <div class="row"><b>개발</b><span id="devSt"></span></div>
+  <div class="row"><button id="dSim">시뮬레이션</button><button id="dGps">실제 GPS</button><button id="dRun">달리기</button><button id="dStop">멈춤</button><button id="dOff">이탈</button></div>
+  <label>속도 <span id="dSpdL">40</span> km/h<input type="range" id="dSpd" min="0" max="120" step="5" value="40"></label>
+  <pre id="dLog"></pre>
 </div>
 
 <script>
 (()=>{
-/* ---------- 기본 유틸 ---------- */
 const $=id=>document.getElementById(id);
-const R=6371000, rad=Math.PI/180;
-function dist(a,b){const dLa=(b.lat-a.lat)*rad,dLo=(b.lng-a.lng)*rad;const s=Math.sin(dLa/2)**2+Math.cos(a.lat*rad)*Math.cos(b.lat*rad)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(s));}
-const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
-const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-function logLine(s){const t=new Date().toTimeString().slice(0,8);const el=$('log');el.textContent=`${t}  ${s}\n`+el.textContent;}
+const DEV=new URLSearchParams(location.search).has('dev');
+const rad=Math.PI/180;
+const dist=(a,b)=>{const dLa=(b.lat-a.lat)*rad,dLo=(b.lng-a.lng)*rad;const s=Math.sin(dLa/2)**2+Math.cos(a.lat*rad)*Math.cos(b.lat*rad)*Math.sin(dLo/2)**2;return 2*6371000*Math.asin(Math.sqrt(s));};
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const log=s=>{if(!DEV)return;const t=new Date().toTimeString().slice(0,8);$('dLog').textContent=`${t} ${s}\n`+$('dLog').textContent;};
+const show=id=>['scrReady','scrWait','scrDrive','scrEnd'].forEach(k=>$(k).hidden=k!==id);
 
-/* 대본에서 '지금'까지 읽는 시간 추정 (한국어 낭독 약 6음절/초) */
-function estimateCue(script){const i=(script||'').indexOf('지금');if(i<0)return 0;return Math.round(script.slice(0,i).replace(/\s/g,'').length/6*10)/10;}
-
-/* ---------- 예시 코스 (좌표는 하례리 부근 임의 좌표, 실제 코스는 기록 모드로 찍기) ---------- */
-function along(route,f,offsetM){
-  const seg=[];let tot=0;
-  for(let i=1;i<route.length;i++){const a={lat:route[i-1][0],lng:route[i-1][1]},b={lat:route[i][0],lng:route[i][1]};const d=dist(a,b);seg.push([a,b,d]);tot+=d;}
-  let s=f*tot;for(const [a,b,d] of seg){if(s<=d){const k=s/d;const lat=a.lat+(b.lat-a.lat)*k,lng=a.lng+(b.lng-a.lng)*k;
-    const dy=(b.lat-a.lat)*110540,dx=(b.lng-a.lng)*111320*Math.cos(lat*rad);const L=Math.hypot(dx,dy)||1;
-    const nx=-dy/L,ny=dx/L; // 진행방향 왼쪽
-    return {lat:lat+ny*offsetM/110540,lng:lng+nx*offsetM/(111320*Math.cos(lat*rad))};}s-=d;}
-  const l=route[route.length-1];return {lat:l[0],lng:l[1]};
-}
-function mkPoint(route,f,side,title,script){
-  const p=along(route,f,side==='왼쪽'?14:side==='오른쪽'?-14:0);
-  return {id:'p'+Math.random().toString(36).slice(2,8),title,side,script,lat:+p.lat.toFixed(6),lng:+p.lng.toFixed(6),cue:estimateCue(script),cueAuto:true,maxLead:300,audio:null,image:null};
-}
-function sampleTrails(){
-  const r1=[[33.2868,126.6098],[33.2852,126.6112],[33.2838,126.6131],[33.2821,126.6140],[33.2803,126.6158],[33.2786,126.6171],[33.2772,126.6189]];
-  const r2=[[33.2772,126.6189],[33.2760,126.6205],[33.2745,126.6214],[33.2728,126.6232],[33.2715,126.6258],[33.2703,126.6281],[33.2690,126.6300]];
-  return [
-    {id:'c1',title:'1코스 · 수둠모루 → 하례생태관광센터',bgm:null,route:r1,points:[
-      mkPoint(r1,.06,'','수둠모루를 떠나며','이제 수둠모루를 떠나 생태관광센터로 갑니다. 창문을 조금 내려 보셔도 좋아요.'),
-      mkPoint(r1,.42,'왼쪽','큰 소나무','곧 왼쪽으로 커다란 소나무 한 그루가 보일 거예요. 지금 왼쪽으로 보이는 큰 소나무가 이 마을의 자랑이에요.'),
-      mkPoint(r1,.78,'오른쪽','귤밭 사이 길','오른쪽으로 귤밭이 이어집니다. 지금 보이는 이 밭들이 봄이면 하얀 귤꽃으로 덮여요.')]},
-    {id:'c2',title:'2코스 · 하례생태관광센터 → 산물관광농원',bgm:null,route:r2,points:[
-      mkPoint(r2,.3,'오른쪽','내창 다리','곧 작은 다리를 건넙니다. 지금 오른쪽 아래로 보이는 마른 하천을 이 마을에서는 내창이라고 불러요.'),
-      mkPoint(r2,.75,'','농원 가까이','이제 산물관광농원이 가까워졌어요. 다음 이야기는 농원에서 이어집니다.')]}
-  ];
-}
-/* ---------- 코스 불러오기: 서버의 공개본(trails/) + 이 폰에만 있는 초안 ---------- */
-let trails=sampleTrails(),published={},cur=0;
-const draftKey=id=>'dt.draft.'+id;
-const clean=t=>{const c=JSON.parse(JSON.stringify(t));delete c._draft;return c;};
-const save=()=>{T()._draft=true;store.set(draftKey(T().id),clean(T()));const ids=new Set(store.get('dt.draftIds')||[]);ids.add(T().id);store.set('dt.draftIds',[...ids]);fillCourseSel();};
-async function loadTrails(){
-  try{
-    const idx=await (await fetch('trails/index.json',{cache:'no-cache'})).json();
-    const list=await Promise.all(idx.courses.map(async c=>{const t=await (await fetch('trails/'+c.file,{cache:'no-cache'})).json();t.id=t.id||c.id;return t;}));
-    if(list.length)trails=list;
-  }catch(e){/* 서버 파일이 없으면(미리보기 등) 예시 코스 사용 */}
-  trails.forEach(t=>published[t.id]=clean(t));
-  trails=trails.map(t=>{const d=store.get(draftKey(t.id));if(d){d._draft=true;return d;}return t;});
-  for(const id of store.get('dt.draftIds')||[]){if(!trails.some(t=>t.id===id)){const d=store.get(draftKey(id));if(d){d._draft=true;trails.push(d);}}}
-  const want=(location.hash||'').slice(1)||new URLSearchParams(location.search).get('course');
-  if(want){const i=trails.findIndex(t=>t.id===want);if(i>=0)cur=i;}
-}
-const T=()=>trails[cur];
-
-function fillCourseSel(){
-  $('courseSel').innerHTML=trails.map((t,i)=>`<option value="${i}" ${i===cur?'selected':''}>${esc(t.title)}${t._draft?' · 내 폰의 초안':''}</option>`).join('');
-}
-
-/* ---------- 음원·이미지 미리 받아두기 (출발 전에 받아 두면 이동 중 끊기지 않음) ---------- */
-const mediaCache=new Map();
-function getBuf(url){if(!mediaCache.has(url))mediaCache.set(url,fetch(url).then(r=>{if(!r.ok)throw new Error(r.status);return r.arrayBuffer();}));return mediaCache.get(url);}
-function preload(){const t=T();[t.bgm,...t.points.map(p=>p.audio)].filter(Boolean).forEach(u=>getBuf(u).catch(()=>mediaCache.delete(u)));
-  t.points.forEach(p=>{if(p.image){const im=new Image();im.src=p.image;}});}
-function esc(s){return String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))}
-
-/* ---------- 오디오 ---------- */
-let ac=null,master,bgmGain,narrGain,bgmNodes=[],narrating=false,narrSrc=null;
-const BGM_LEVEL=.55,DUCK=.18;
-async function audioStart(){
-  if(!ac){
-    const C=window.AudioContext||window.webkitAudioContext;ac=new C();
-    master=ac.createGain();master.gain.value=.9;master.connect(ac.destination);
-    bgmGain=ac.createGain();bgmGain.gain.value=0;bgmGain.connect(master);
-    narrGain=ac.createGain();narrGain.gain.value=1;narrGain.connect(master);
-    if('speechSynthesis' in window){const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u);} // iOS 음성 준비
+/* ---------- 코스 ---------- */
+let C=null,R=[],CUM=[],LEN=0;
+const xy=(p,ref)=>[(p.lng-ref.lng)*111320*Math.cos(ref.lat*rad),(p.lat-ref.lat)*110540];
+// 경로 위의 위치(출발점에서 몇 m) 와 경로에서 떨어진 거리
+function project(p,from=0,to=R.length-1){
+  let best={d:1e9,s:0};
+  for(let i=Math.max(1,from);i<=Math.min(R.length-1,to);i++){
+    const a=R[i-1],b=R[i],[bx,by]=xy(b,a),[px,py]=xy(p,a);const L2=bx*bx+by*by||1;
+    const k=Math.max(0,Math.min(1,(px*bx+py*by)/L2));const dx=px-bx*k,dy=py-by*k;const d=Math.hypot(dx,dy);
+    if(d<best.d)best={d,s:CUM[i-1]+Math.sqrt(L2)*k,i};
   }
-  await ac.resume();
+  return best;
 }
+const est=t=>Math.max(3,(t||'').replace(/\s/g,'').length/4.6+1.2); // 낭독 길이 추정(초)
+
+async function loadCourse(){
+  const idx=await (await fetch('trails/index.json',{cache:'no-cache'})).json();
+  const want=(location.hash||'').slice(1)||idx.courses[0].id;
+  const c=idx.courses.find(x=>x.id===want)||idx.courses[0];
+  C=await (await fetch('trails/'+c.file,{cache:'no-cache'})).json();
+  R=C.route.map(r=>({lat:r[0],lng:r[1]}));CUM=[0];for(let i=1;i<R.length;i++)CUM.push(CUM[i-1]+dist(R[i-1],R[i]));LEN=CUM[CUM.length-1];
+  C.points.forEach(p=>{p.s=project(p).s;p.dur=est(p.script);p.st='wait';});
+  const name=C.title.split('·');
+  $('rTitle').textContent=(name[1]||C.title).trim();$('wCourse').textContent=name[0].trim();$('dTitle').textContent=(name[1]||C.title).trim();
+  $('jFrom').textContent=C.origin?.name||'';$('jTo').textContent=C.dest?.name||'';
+  const J=$('journey');C.points.forEach(p=>{const m=document.createElement('span');m.className='mk';m.style.left=`calc(8px + (100% - 16px) * ${p.s/LEN})`;J.insertBefore(m,$('jCar'));p.mk=m;});
+  setupDest();
+}
+
+/* ---------- 소리 ---------- */
+let ac,master,bgmG,narrG,bgmNodes=[],narr=null;const BGM=.5,DUCK=.16;
+function audioInit(){
+  if(ac)return;const AC=window.AudioContext||window.webkitAudioContext;ac=new AC();
+  master=ac.createGain();master.connect(ac.destination);
+  bgmG=ac.createGain();bgmG.gain.value=0;bgmG.connect(master);narrG=ac.createGain();narrG.connect(master);
+  if('speechSynthesis' in window){const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u);}
+}
+const bufCache={};
+function getBuf(u){return bufCache[u]||(bufCache[u]=fetch(u).then(r=>{if(!r.ok)throw 0;return r.arrayBuffer();}).then(b=>ac.decodeAudioData(b)));}
 async function startBgm(){
-  stopBgm();
-  const t=T();
-  if(t.bgm){
-    try{const buf=await ac.decodeAudioData((await getBuf(t.bgm)).slice(0));
-      const s=ac.createBufferSource();s.buffer=buf;s.loop=true;s.connect(bgmGain);s.start();bgmNodes.push(s);}
-    catch(e){logLine('배경음악 파일을 읽지 못해 임시 음악으로 대신합니다');synthPad();}
-  } else synthPad();
-  bgmGain.gain.cancelScheduledValues(ac.currentTime);
-  bgmGain.gain.setTargetAtTime(BGM_LEVEL,ac.currentTime,1.5);
+  bgmNodes.forEach(n=>{try{n.stop()}catch(e){}});bgmNodes=[];
+  if(C.bgm){try{const b=await getBuf(C.bgm);const s=ac.createBufferSource();s.buffer=b;s.loop=true;s.connect(bgmG);s.start();bgmNodes.push(s);}catch(e){bells();}}else bells();
+  bgmG.gain.cancelScheduledValues(ac.currentTime);bgmG.gain.setTargetAtTime(BGM,ac.currentTime,1.5);
 }
-function synthPad(){ // 임시 배경음: 차 소음(저음역)에 묻히지 않도록 중고음역의 맑은 종소리 + 옅은 화음
-  // 저음 제거: 엔진·노면 소음이 몰린 250Hz 아래는 잘라낸다
-  const hp=ac.createBiquadFilter();hp.type='highpass';hp.frequency.value=260;hp.Q.value=.5;hp.connect(bgmGain);
-  // 짧은 메아리로 공간감
-  const dly=ac.createDelay(1);dly.delayTime.value=.38;const fb=ac.createGain();fb.gain.value=.32;const wet=ac.createGain();wet.gain.value=.35;
-  dly.connect(fb);fb.connect(dly);dly.connect(wet);wet.connect(hp);
-  // 옅은 화음(한 옥타브 이상 올림)
-  const chords=[[349.2,440,523.3,659.3],[293.7,440,523.3,698.5],[329.6,392,493.9,659.3],[261.6,392,523.3,622.3]];
+function bells(){ // 임시 배경음: 차 소음(저음역)에 묻히지 않는 중고음역 종소리
+  const hp=ac.createBiquadFilter();hp.type='highpass';hp.frequency.value=260;hp.connect(bgmG);
+  const dl=ac.createDelay(1);dl.delayTime.value=.38;const fb=ac.createGain();fb.gain.value=.32;const wet=ac.createGain();wet.gain.value=.35;dl.connect(fb);fb.connect(dl);dl.connect(wet);wet.connect(hp);
+  const ch=[[349.2,440,523.3,659.3],[293.7,440,523.3,698.5],[329.6,392,493.9,659.3],[261.6,392,523.3,622.3]];
   const pad=ac.createGain();pad.gain.value=.022;pad.connect(hp);
-  const voices=chords[0].map((f,i)=>{const o=ac.createOscillator();o.type='sine';o.frequency.value=f;o.detune.value=(i-1.5)*5;o.connect(pad);o.start();bgmNodes.push(o);return o;});
-  // 종소리: 화음에 맞춘 5음 음계에서 느리게 한 음씩
-  const scales=[[698.5,880,1046.5,1318.5,1396.9],[587.3,880,1046.5,1174.7,1396.9],[659.3,784,987.8,1318.5,1568],[523.3,784,1046.5,1244.5,1568]];
-  let k=0;
-  const bell=()=>{const sc=scales[k],f=sc[Math.floor(Math.random()*sc.length)],t=ac.currentTime;
-    [[1,.11],[2.76,.025]].forEach(([m,a])=>{const o=ac.createOscillator();o.type='sine';o.frequency.value=f*m;
-      const g=ac.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(a,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+(m>1?1.2:3.2));
-      o.connect(g);g.connect(hp);g.connect(dly);o.start(t);o.stop(t+3.4);});};
-  let bt=0;const tick=()=>{bell();bt=setTimeout(tick,1400+Math.random()*1800);};tick();
-  const step=()=>{k=(k+1)%chords.length;voices.forEach((o,i)=>o.frequency.setTargetAtTime(chords[k][i],ac.currentTime,2.5));};
-  const iv=setInterval(step,9000);bgmNodes.push({stop(){clearInterval(iv);clearTimeout(bt);}});
+  const vs=ch[0].map((f,i)=>{const o=ac.createOscillator();o.type='sine';o.frequency.value=f;o.detune.value=(i-1.5)*5;o.connect(pad);o.start();bgmNodes.push(o);return o;});
+  const sc=[[698.5,880,1046.5,1318.5,1396.9],[587.3,880,1046.5,1174.7,1396.9],[659.3,784,987.8,1318.5,1568],[523.3,784,1046.5,1244.5,1568]];let k=0,bt;
+  const bell=()=>{const f=sc[k][Math.floor(Math.random()*5)],t=ac.currentTime;[[1,.11],[2.76,.025]].forEach(([m,a])=>{const o=ac.createOscillator();o.frequency.value=f*m;const g=ac.createGain();g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(a,t+.01);g.gain.exponentialRampToValueAtTime(.0001,t+(m>1?1.2:3.2));o.connect(g);g.connect(hp);g.connect(dl);o.start(t);o.stop(t+3.4);});};
+  const tick=()=>{bell();bt=setTimeout(tick,1400+Math.random()*1800);};tick();
+  const iv=setInterval(()=>{k=(k+1)%4;vs.forEach((o,i)=>o.frequency.setTargetAtTime(ch[k][i],ac.currentTime,2.5));},9000);
+  bgmNodes.push({stop(){clearInterval(iv);clearTimeout(bt);}});
 }
-function stopBgm(){bgmNodes.forEach(n=>{try{n.stop()}catch(e){}});bgmNodes=[];}
-function duck(on){if(!ac||(!on&&!running))return;bgmGain.gain.cancelScheduledValues(ac.currentTime);bgmGain.gain.setTargetAtTime(on?BGM_LEVEL*DUCK:BGM_LEVEL,ac.currentTime,on?.4:1.2);}
+function duck(on){if(!ac||phase==='ended')return;bgmG.gain.cancelScheduledValues(ac.currentTime);bgmG.gain.setTargetAtTime(on?BGM*DUCK:(phase==='arrived'?BGM*.45:BGM),ac.currentTime,on?.4:1.2);}
+function speak(text,done){
+  if(!('speechSynthesis' in window)){setTimeout(done,est(text)*1000);return;}
+  let fin=false;const end=()=>{if(fin)return;fin=true;done();};
+  const u=new SpeechSynthesisUtterance(text);u.lang='ko-KR';u.rate=1;const v=speechSynthesis.getVoices().find(v=>/ko/i.test(v.lang));if(v)u.voice=v;
+  u.onend=end;u.onerror=end;speechSynthesis.cancel();speechSynthesis.speak(u);setTimeout(end,est(text)*1300+3000);
+}
+async function playLine(p,onEnd){
+  duck(true);const done=()=>{narr=null;duck(false);onEnd&&onEnd();};
+  narr={p};
+  await new Promise(r=>setTimeout(r,500));
+  if(p.audio){try{const b=await getBuf(p.audio);const s=ac.createBufferSource();s.buffer=b;s.connect(narrG);s.onended=done;s.start();narr.src=s;return;}catch(e){log('녹음 파일 실패, 음성 합성으로');}}
+  speak(p.script,done);
+}
 
-async function playNarration(p,onEnd){
-  narrating=true;duck(true);
-  const done=()=>{if(!narrating)return;narrating=false;narrSrc=null;duck(false);onEnd&&onEnd();};
-  if(p.audio){
-    try{const buf=await ac.decodeAudioData((await getBuf(p.audio)).slice(0));
-      const s=ac.createBufferSource();s.buffer=buf;s.connect(narrGain);s.onended=done;
-      setTimeout(()=>{s.start();narrSrc=s;},600);return;}
-    catch(e){logLine('녹음 파일을 읽지 못해 음성 합성으로 대신합니다');}
+/* ---------- 화면 ---------- */
+const ARROWS={
+  left:'<path d="M130 180 V95 Q130 70 105 70 H60" /><path d="M78 44 L48 70 L78 96"/>',
+  right:'<path d="M70 180 V95 Q70 70 95 70 H140"/><path d="M122 44 L152 70 L122 96"/>',
+  straight:'<path d="M100 185 V40"/><path d="M70 70 L100 38 L130 70"/>',
+  'rotary-right':'<circle cx="100" cy="92" r="30"/><path d="M100 185 V122"/><path d="M130 92 H172"/><path d="M152 70 L176 92 L152 114"/>',
+  'rotary-left':'<circle cx="100" cy="92" r="30"/><path d="M100 185 V122"/><path d="M70 92 H28"/><path d="M48 70 L24 92 L48 114"/>'
+};
+let layerNow='idle',slideTimer=0,arrowFor=null;
+function setLayer(k){layerNow=k;$('lyIdle').classList.toggle('on',k==='idle');$('lyImg').classList.toggle('on',k==='img');$('lyArrow').classList.toggle('on',k==='arrow');}
+function showScreen(p){
+  const sc=p.screen||{type:'image'};
+  if(sc.type==='arrive'){openArrive(true);return;}
+  if(sc.type==='arrow'){
+    $('arrowSvg').innerHTML=`<g fill="none" stroke="#ebe6d8" stroke-width="14" stroke-linecap="round" stroke-linejoin="round">${ARROWS[sc.dir]||ARROWS.straight}</g>`;
+    $('arrowT').textContent=sc.label||'';$('arrowS').textContent=p.title;arrowFor=p;setLayer('arrow');return;
   }
-  if('speechSynthesis' in window){
-    const u=new SpeechSynthesisUtterance(p.script||p.title);u.lang='ko-KR';u.rate=1;
-    const v=speechSynthesis.getVoices().find(v=>/ko/i.test(v.lang));if(v)u.voice=v;
-    u.onend=done;u.onerror=done;
-    setTimeout(()=>speechSynthesis.speak(u),600);
-    // 안전장치: 음성 합성이 끝 신호를 안 주는 기기 대비
-    setTimeout(done,Math.max(4000,(p.script||'').length/6*1000+4000));
-  } else setTimeout(done,3000);
+  clearInterval(slideTimer);const imgs=(sc.images||[]).filter(Boolean),box=$('slides');
+  box.innerHTML=imgs.length?imgs.map((u,i)=>`<div class="slide${i?'':' on'}" style="background-image:url('${encodeURI(u)}')"></div>`).join(''):`<div class="ph"><span>${esc(sc.caption||p.title)} 사진</span></div>`;
+  if(imgs.length>1){let k=0;slideTimer=setInterval(()=>{const s=box.children;s[k].classList.remove('on');k=(k+1)%s.length;s[k].classList.add('on');},6000);}
+  $('imgCap').textContent=sc.caption||p.title;setLayer('img');
+}
+function afterLine(p){
+  const sc=p.screen||{};
+  if(sc.type==='arrow')return; // 회전 지점을 지나면 닫힘(아래 tick에서)
+  setTimeout(()=>{if(!narr&&layerNow==='img')setLayer('idle');},5000);
 }
 
-/* ---------- 화면 무대 ---------- */
-let imgFlip=false;
-function showPoint(p){
-  const el=imgFlip?$('imgA'):$('imgB'),other=imgFlip?$('imgB'):$('imgA');imgFlip=!imgFlip;
-  if(p.image){el.innerHTML='';el.style.backgroundImage=`url("${p.image}")`;}
-  else{const hue=(p.title.length*37)%60+20;el.style.backgroundImage=`radial-gradient(120% 90% at 30% 20%,hsl(${hue} 30% 32%),hsl(${hue+120} 18% 12%))`;el.innerHTML=`<div class="ph">이미지 자리</div>`;}
-  el.classList.add('on');other.classList.remove('on');
-  $('idle').style.opacity=0;
-  $('capSide').hidden=!p.side;$('capSide').textContent=p.side==='왼쪽'?'← 왼쪽':p.side==='오른쪽'?'오른쪽 →':'';
-  $('capTitle').textContent=p.title;$('cap').classList.add('on');
+/* ---------- 진행 ---------- */
+let phase='ready',armed=false,pos=null,v=0,lastPos=null,S=0,Sraw=0,offD=0,idxHint=0;
+let fastSince=0,offSince=0,backSince=0,offRoute=false,stopSince=0;
+function onPos(p){
+  if(lastPos){const dt=(p.t-lastPos.t)/1000;if(dt>0){const raw=(p.speed!=null&&p.speed>=0)?p.speed:dist(lastPos,p)/dt;v=v*.5+raw*.5;}}
+  lastPos=p;pos=p;
+  const pr=idxHint?project(p,idxHint-8,idxHint+80):project(p);
+  if(pr.d>120&&idxHint){const g=project(p);if(g.d<pr.d)Object.assign(pr,g);}
+  offD=pr.d;Sraw=pr.s;if(pr.d<60){S=Math.max(S,pr.s);idxHint=pr.i;}
+  updateGpsChip();
+  if(phase==='wait'||phase==='drive'||phase==='arrived')tick();
 }
-function clearStage(){
-  setTimeout(()=>{if(narrating)return;$('cap').classList.remove('on');$('imgA').classList.remove('on');$('imgB').classList.remove('on');$('idle').style.opacity=1;},6000);
-}
-
-/* ---------- 재생 규칙 ---------- */
-let running=false,state=[],lastPos=null,speed=0,curLead=0;
-// 대본도 녹음도 없는 지점은 소리 없이 건너뜀. 위치·속도 값은 지우지 않음(지우면 다음 위치에서 속도가 0으로 기록됨)
-function resetState(){state=T().points.map(p=>({st:(p.script||p.audio)?'waiting':'silent',minD:Infinity}));renderStatus(lastPos);}
-function target(){return state.findIndex(s=>s.st==='waiting'||s.st==='pending');}
-
-function onPosition(pos){
-  // pos: {lat,lng,t(ms),speed(m/s|null),acc}
-  if(lastPos){const dt=(pos.t-lastPos.t)/1000;if(dt>0){
-    const raw=(pos.speed!=null&&pos.speed>=0)?pos.speed:dist(lastPos,pos)/dt;
-    speed=speed*.55+raw*.45;}}
-  lastPos=pos;updatePosNote(pos);if(track.on)trackAdd(pos);
-  if(!running){renderStatus(pos);drawMap();return;}
-  const i=target();
-  if(i>=0){
-    const p=T().points[i],s=state[i],d=dist(pos,p);
-    if(d<s.minD)s.minD=d;
-    curLead=clamp(speed*(p.cue||0)+15,40,p.maxLead||300);
-    const moving=speed>1.5;
-    if(s.minD<150&&d>s.minD+35){ // 이미 지나침
-      s.st='missed';logLine(`지나침: ${p.title} (재생 못 함)`);renderEditList();
-    } else if((moving&&d<=curLead)||d<=30){
-      if(narrating){if(s.st!=='pending'){s.st='pending';logLine(`대기: ${p.title} (앞 이야기 재생 중)`);}}
-      else{
-        s.st='playing';logLine(`재생: ${p.title} · 거리 ${Math.round(d)}m · ${Math.round(speed*3.6)}km/h · 도착시점 ${p.cue}s`);
-        showPoint(p);renderEditList();
-        playNarration(p,()=>{s.st='done';logLine(`끝: ${p.title}`);clearStage();renderEditList();});
-      }
+function tick(){
+  const now=Date.now();
+  // 속도로 출발 감지: 버튼을 깜빡해도 시속 15km 이상 5초면 출발로 봄
+  if(!armed){if(v>4.2){fastSince=fastSince||now;if(now-fastSince>5000){armed=true;log('속도로 출발 감지');if(phase==='wait'){phase='drive';show('scrDrive');}}}else fastSince=0;}
+  if(phase==='wait')return;
+  bar();journey();
+  if(!armed||phase!=='drive')return;
+  // 경로 이탈
+  const acc=pos.acc??10;
+  if(!offRoute){if(offD>70&&acc<45&&S>30){offSince=offSince||now;if(now-offSince>12000)setOff(true);}else offSince=0;}
+  else{if(offD<35){backSince=backSince||now;if(now-backSince>4000)setOff(false);}else backSince=0;return;}
+  // 회전 표시는 지점을 지나면 닫음
+  if(arrowFor&&!narr&&S>arrowFor.s+25){arrowFor=null;setLayer('idle');}
+  // 다음 지점
+  const p=C.points.find(q=>q.st==='wait');
+  if(p){
+    const vv=Math.max(v,4);
+    const start=p.mode==='endBy'?p.s-vv*(p.dur+2)-15+(p.offset||0):p.s+(p.offset||0);
+    const limit=p.mode==='endBy'?p.s+10:p.s+250;
+    if(S>limit){p.st='miss';p.mk.classList.add('done');log('지나침 '+p.title);}
+    else if(S>=start&&!narr){
+      p.st='play';log(`재생 ${p.title} @${Math.round(S)}m ${Math.round(v*3.6)}km/h`);
+      showScreen(p);p.mk.classList.add('done');
+      playLine(p,()=>{p.st='done';afterLine(p);});
     }
   }
-  renderStatus(pos);drawMap();
+  // 도착: 목적지 근처에서 멈추면
+  const near=S>LEN-90||(C.dest&&dist(pos,C.dest)<60);
+  if(near&&v<1.5){stopSince=stopSince||now;if(now-stopSince>3000)openArrive(false);}else stopSince=0;
+  if(S>LEN-12)openArrive(false);
 }
-function renderStatus(pos){
-  $('sSpeed').textContent=pos?`${Math.round(speed*3.6)} km/h`:'–';
-  $('sAcc').textContent=pos&&pos.acc!=null?`±${Math.round(pos.acc)} m`:'–';
-  const i=target();
-  if(i<0){$('sNext').textContent=running?'모든 이야기를 들었어요':'–';$('sDist').textContent='–';$('sLead').textContent='–';return;}
-  const p=T().points[i];
-  $('sNext').textContent=`${i+1}. ${p.title}${p.side?' · '+p.side:''}`;
-  $('sDist').textContent=pos?`${Math.round(dist(pos,p))} m`:'–';
-  $('sLead').textContent=pos&&running?`${Math.round(curLead)} m`:'–';
+function journey(){const k=Math.min(1,S/LEN);$('jCar').style.left=`calc(8px + (100% - 16px) * ${k})`;$('jDone').style.width=`calc((100% - 16px) * ${k})`;}
+function bar(){
+  const ok=pos&&(pos.acc??99)<40;$('barDot').style.background=ok?'var(--leaf)':'var(--accent)';
+  $('barTxt').textContent=!armed?'출발을 기다리는 중':offRoute?'코스 밖':narr?'이야기 중':'코스 위';
+  $('barSpd').textContent=pos?`${Math.round(v*3.6)} km/h`:'';
+  if(DEV)$('devSt').textContent=`S ${Math.round(S)}/${Math.round(LEN)}m · 이탈 ${Math.round(offD)}m · ${armed?'출발':'대기'} · ${phase}`;
+}
+function updateGpsChip(){
+  if(phase!=='wait')return;const a=pos?.acc;const c=$('chipGps');
+  if(a==null){c.className='chip wait';$('gpsV').textContent='찾는 중';}
+  else if(a<=30){c.className='chip ok';$('gpsV').textContent=`준비됨 ±${Math.round(a)}m`;}
+  else{c.className='chip wait';$('gpsV').textContent=`잡는 중 ±${Math.round(a)}m`;}
 }
 
-/* ---------- 위치 입력: GPS ---------- */
-let geoId=null,wake=null;
+/* ---------- 이탈 / 도착 / 종료 ---------- */
+function setupDest(){
+  const d=C.dest;if(!d)return;
+  $('offName').textContent=d.name;$('offAddr').textContent=d.address;
+  const n=encodeURIComponent(d.name);
+  $('navKakao').href=`https://map.kakao.com/link/to/${n},${d.lat},${d.lng}`;
+  $('navNaver').href=`nmap://route/car?dlat=${d.lat}&dlng=${d.lng}&dname=${n}&appname=kr.harye.drive`;
+  $('navTmap').href=`tmap://route?goalname=${n}&goalx=${d.lng}&goaly=${d.lat}`;
+  $('aName').textContent=d.name;const A=d.arrive||{};
+  $('aText').textContent=A.text||d.parking||'';$('aNext').textContent=A.next||'';
+  if(A.photo)$('aPhoto').innerHTML=`<img src="${encodeURI(A.photo)}" alt="주차 자리">`;
+}
+function setOff(on){
+  offRoute=on;offSince=0;backSince=0;$('scrOff').hidden=!on;log(on?'경로 이탈':'경로 복귀');
+  if(on&&!narr){narr={p:{}};duck(true);speak(C.offRoute?.say||'길이 조금 엇갈린 것 같아요. 안전한 곳에 잠시 멈춘 뒤 화면을 봐 주세요.',()=>{narr=null;duck(false);});}
+}
+function openArrive(fromLine){
+  if(phase==='arrived'||phase==='ended')return;
+  phase='arrived';$('scrOff').hidden=true;$('scrArrive').hidden=false;$('aEyebrow').textContent='도착';
+  if(!narr)duck(false);log('도착 화면'+(fromLine?' (도착 안내)':''));
+}
+$('btnEnd').onclick=()=>{
+  phase='ended';if(geo!=null)navigator.geolocation.clearWatch(geo);geo=null;sim.on=false;
+  try{speechSynthesis.cancel()}catch(e){}
+  if(ac){bgmG.gain.setTargetAtTime(0,ac.currentTime,.4);setTimeout(()=>{bgmNodes.forEach(n=>{try{n.stop()}catch(e){}});ac.close().catch(()=>{});},1500);}
+  try{wake&&wake.release()}catch(e){}
+  $('scrArrive').hidden=true;$('scrOff').hidden=true;show('scrEnd');
+};
+$('btnCopy').onclick=()=>{const t=`${C.dest.address}`;const ok=()=>$('copyNote').textContent='주소를 복사했어요. 길찾기 앱의 검색창에 붙여넣어 주세요.';
+  if(navigator.clipboard)navigator.clipboard.writeText(t).then(ok,()=>{selectAddr();});else selectAddr();};
+function selectAddr(){const r=document.createRange();r.selectNodeContents($('offAddr'));const s=getSelection();s.removeAllRanges();s.addRange(r);$('copyNote').textContent='주소를 선택해 두었어요. 길게 눌러 복사해 주세요.';}
+
+/* ---------- 위치 ---------- */
+let geo=null,wake=null;
 function gpsOn(){
-  if(!('geolocation' in navigator)){$('srcNote').textContent='이 브라우저에서는 위치를 쓸 수 없어요.';$('srcNote').className='note warn';return;}
-  geoId=navigator.geolocation.watchPosition(
-    p=>onPosition({lat:p.coords.latitude,lng:p.coords.longitude,t:p.timestamp,speed:p.coords.speed,acc:p.coords.accuracy}),
-    e=>{$('srcNote').textContent=e.code===1?'위치 권한이 거부되었어요. 이 미리보기 화면에서는 GPS를 쓸 수 없고, 실제 주소(https)로 올린 페이지에서 작동합니다.':'위치를 받지 못하고 있어요: '+e.message;$('srcNote').className='note warn';},
+  if(!('geolocation' in navigator)){$('gpsV').textContent='이 브라우저는 위치를 지원하지 않아요';$('chipGps').className='chip bad';return;}
+  geo=navigator.geolocation.watchPosition(
+    p=>{if(!sim.on)onPos({lat:p.coords.latitude,lng:p.coords.longitude,t:p.timestamp,speed:p.coords.speed,acc:p.coords.accuracy});},
+    e=>{$('chipGps').className='chip bad';$('gpsV').textContent=e.code===1?'위치 사용이 꺼져 있어요':'위치를 못 받고 있어요';
+        if(e.code===1)$('wHelp')||$('scrWait').querySelector('.lead').insertAdjacentHTML('afterend','<p class="lead" id="wHelp" style="color:var(--warn)">설정 › 개인정보 보호 › 위치 서비스 › Safari 웹 사이트에서 위치 허용을 켠 뒤 이 페이지를 새로고침해 주세요.</p>');},
     {enableHighAccuracy:true,maximumAge:0,timeout:20000});
 }
-function gpsOff(){if(geoId!=null)navigator.geolocation.clearWatch(geoId);geoId=null;}
-async function keepAwake(){try{if('wakeLock' in navigator)wake=await navigator.wakeLock.request('screen');}catch(e){}}
-document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&running)keepAwake();});
-
-/* ---------- 위치 입력: 시뮬레이션 ---------- */
-const sim={on:true,go:false,s:0,kmh:35,segs:[],tot:0,lastFeed:0,raf:0};
-function simBuild(){
-  const r=T().route||[];sim.segs=[];sim.tot=0;
-  for(let i=1;i<r.length;i++){const a={lat:r[i-1][0],lng:r[i-1][1]},b={lat:r[i][0],lng:r[i][1]};const d=dist(a,b);sim.segs.push({a,b,d,s0:sim.tot});sim.tot+=d;}
-  sim.s=0;
-}
-function simPos(){
-  for(const g of sim.segs){if(sim.s<=g.s0+g.d){const k=(sim.s-g.s0)/g.d;return {lat:g.a.lat+(g.b.lat-g.a.lat)*k,lng:g.a.lng+(g.b.lng-g.a.lng)*k};}}
-  const g=sim.segs[sim.segs.length-1];return g?{...g.b}:null;
-}
-let simTarget=0,simKmh=0,lastFrame=0;
-function simLoop(ts){
-  const dt=lastFrame?Math.min(.1,(ts-lastFrame)/1000):0;lastFrame=ts;
-  simTarget=sim.go?sim.kmh:0;
-  simKmh+= (simTarget-simKmh)*Math.min(1,dt*.9); // 부드럽게 가속·감속
-  sim.s=Math.min(sim.tot,sim.s+simKmh/3.6*dt);
-  if(sim.s>=sim.tot)sim.go=false;
-  if(sim.on&&ts-sim.lastFeed>1000){ // GPS처럼 1초마다, 오차 ±6m
-    sim.lastFeed=ts;const p=simPos();
-    if(p){const n=()=>(Math.random()-.5)*12;
-      onPosition({lat:p.lat+n()/110540,lng:p.lng+n()/(111320*Math.cos(p.lat*rad)),t:Date.now(),speed:simKmh/3.6,acc:6});}
-  }
-  if(sim.on)drawMap();
-  sim.raf=requestAnimationFrame(simLoop);
-}
-
-/* ---------- 지도 ---------- */
-function drawMap(){
-  const cv=$('map'),g=cv.getContext('2d'),W=cv.width,H=cv.height,t=T();
-  g.clearRect(0,0,W,H);
-  const pts=[...(t.route||[]).map(r=>({lat:r[0],lng:r[1]})),...t.points];
-  if(lastPos&&!sim.on)pts.push(lastPos);
-  if(!pts.length)return;
-  let la0=Infinity,la1=-Infinity,lo0=Infinity,lo1=-Infinity;
-  pts.forEach(p=>{la0=Math.min(la0,p.lat);la1=Math.max(la1,p.lat);lo0=Math.min(lo0,p.lng);lo1=Math.max(lo1,p.lng);});
-  const cos=Math.cos((la0+la1)/2*rad);const wm=Math.max(1,(lo1-lo0)*111320*cos),hm=Math.max(1,(la1-la0)*110540);
-  const sc=Math.min((W-120)/wm,(H-120)/hm);const ox=(W-wm*sc)/2,oy=(H-hm*sc)/2;
-  const P=p=>[ox+(p.lng-lo0)*111320*cos*sc,H-(oy+(p.lat-la0)*110540*sc)];
-  // 길
-  if(t.route&&t.route.length>1){g.strokeStyle='#3b4743';g.lineWidth=14;g.lineCap='round';g.lineJoin='round';g.beginPath();
-    t.route.forEach((r,i)=>{const [x,y]=P({lat:r[0],lng:r[1]});i?g.lineTo(x,y):g.moveTo(x,y);});g.stroke();}
-  // 다음 지점의 재생 시작 원
-  const ti=target();
-  if(running&&ti>=0){const [x,y]=P(t.points[ti]);g.setLineDash([10,8]);g.strokeStyle='rgba(230,162,60,.7)';g.lineWidth=2;g.beginPath();g.arc(x,y,curLead*sc,0,7);g.stroke();g.setLineDash([]);}
-  // 지점
-  g.font='500 22px "IBM Plex Sans KR",sans-serif';g.textBaseline='middle';
-  t.points.forEach((p,i)=>{const [x,y]=P(p);const st=state[i]?.st;
-    g.fillStyle=st==='done'?'#86a77f':st==='missed'?'#d9775b':st==='playing'?'#e6a23c':st==='silent'?'#5a6661':'#ebe6d8';
-    g.beginPath();g.arc(x,y,10,0,7);g.fill();g.fillStyle='#ebe6d8';g.fillText(`${i+1} ${p.title}`,x+18,y);});
-  // 차량
-  const car=sim.on?simPos():lastPos;
-  if(car){const [x,y]=P(car);g.fillStyle='#e6a23c';g.beginPath();g.arc(x,y,13,0,7);g.fill();g.strokeStyle='#141a19';g.lineWidth=4;g.stroke();}
-}
-
-/* ---------- 주행 조작 ---------- */
-$('startBtn').onclick=async()=>{
-  if(!running){
-    await audioStart();startBgm();resetState();running=true;keepAwake();
-    $('startBtn').textContent='주행 끝내기';$('startBtn').classList.remove('primary');
-    $('idleTitle').textContent=T().title.split('·')[1]?.trim()||T().title;$('idleSub').textContent='이동 중에도 이야기는 이어집니다';
-    logLine(`출발: ${T().title}`);
-    if(sim.on&&!sim.go){sim.go=true;}
-  } else {
-    running=false;sim.go=false;
-    if(ac){bgmGain.gain.cancelScheduledValues(ac.currentTime);bgmGain.gain.setTargetAtTime(0,ac.currentTime,.3);
-      setTimeout(()=>{if(!running){stopBgm();ac.suspend().catch(()=>{});}},1200);} // 소리를 완전히 멈춤
-    if('speechSynthesis' in window)speechSynthesis.cancel();if(narrSrc)try{narrSrc.stop()}catch(e){}
-    narrating=false;try{wake&&wake.release()}catch(e){}
-    $('startBtn').textContent='출발 · 소리 켜기';$('startBtn').classList.add('primary');
-    $('idleSub').textContent='출발 버튼을 누르면 음악이 시작됩니다';
-    $('cap').classList.remove('on');$('imgA').classList.remove('on');$('imgB').classList.remove('on');$('idle').style.opacity=1;
-    logLine('주행 종료');
-  }
-};
-function setSource(s){
-  sim.on=s==='sim';$('srcSim').setAttribute('aria-pressed',sim.on);$('srcGps').setAttribute('aria-pressed',!sim.on);
-  $('simCtl').hidden=!sim.on;$('srcNote').className='note';
-  if(sim.on){gpsOff();$('srcNote').textContent='시뮬레이션은 지도 위 가상 차량이 코스를 달리며 같은 재생 규칙을 시험합니다.';}
-  else{sim.go=false;$('srcNote').textContent='폰 GPS를 씁니다. 화면을 켠 채 거치대에 두세요.';lastPos=null;gpsOn();}
-  $('gpsWarn').hidden=!sim.on;
-  drawMap();
-}
-$('srcSim').onclick=()=>setSource('sim');$('srcGps').onclick=()=>setSource('gps');
-$('simSpd').oninput=e=>{sim.kmh=+e.target.value;$('simSpdLbl').textContent=`${sim.kmh} km/h`;};
-$('simGo').onclick=()=>{sim.go=true;};
-$('simStop').onclick=()=>{sim.go=false;};
-$('simReset').onclick=()=>{sim.go=false;simKmh=0;sim.s=0;resetState();drawMap();logLine('시뮬레이션 처음으로');};
-
-function selectCourse(i){if(track.on)trackStop();cur=i;$('courseSel').value=i;if(running)$('startBtn').click();simBuild();resetState();renderEdit();drawMap();preload();}
-$('courseSel').onchange=e=>selectCourse(+e.target.value);
-
-/* ---------- 탭 ---------- */
-function tab(which){const e=which==='edit';$('viewEdit').hidden=!e;$('viewPlay').hidden=e;$('tabEdit').setAttribute('aria-selected',e);$('tabPlay').setAttribute('aria-selected',!e);if(e)renderEdit();else drawMap();}
-$('tabPlay').onclick=()=>tab('play');$('tabEdit').onclick=()=>tab('edit');
-
-/* ---------- 기록 모드 ---------- */
-function updatePosNote(p){$('posNote').textContent=p?`현재 위치: ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}${p.acc!=null?` (±${Math.round(p.acc)}m)`:''} · ${sim.on?'시뮬레이션':'GPS'}`:'현재 위치: –';}
-function renderEdit(){
-  $('cTitle').value=T().title;
-  $('editCourseSeg').innerHTML=trails.map((t,i)=>`<button data-i="${i}" aria-pressed="${i===cur}">${esc((t.title.split('·')[0]||t.title).trim())}</button>`).join('');
-  $('gpsWarn').hidden=!sim.on;
-  renderTrack();renderEditList();
-}
-$('editCourseSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(b)selectCourse(+b.dataset.i);});
-
-/* ---------- 경로 기록 ---------- */
-const track={on:false,saveIv:0,dirty:false};
-function routeLen(r){let d=0;for(let i=1;i<(r||[]).length;i++)d+=dist({lat:r[i-1][0],lng:r[i-1][1]},{lat:r[i][0],lng:r[i][1]});return d;}
-function renderTrack(){
-  const r=T().route||[],rec=T().routeRecorded;
-  $('trackBtn').textContent=track.on?'경로 기록 끝':(rec&&r.length?'경로 기록 이어서':'경로 기록 시작');
-  $('trackBtn').classList.toggle('primary',!track.on);
-  const km=(routeLen(r)/1000).toFixed(2);
-  $('trackNote').textContent=track.on?`● 기록 중 · ${km} km · 위치 ${r.length}개 · 지점 ${T().points.length}개${lastPos&&lastPos.acc!=null?` · ±${Math.round(lastPos.acc)}m`:''}`
-    :rec&&r.length?`기록한 경로 ${km} km · 위치 ${r.length}개 · 지점 ${T().points.length}개`:'아직 기록한 경로가 없어요. (지금 보이는 길은 예시예요)';
-  $('trackNote').className=track.on?'note rec':'note';
-}
-function trackAdd(p){
-  if(p.acc!=null&&p.acc>35)return; // 오차가 큰 위치는 버림
-  const r=T().route,l=r[r.length-1];
-  if(l&&dist({lat:l[0],lng:l[1]},p)<8)return;
-  r.push([+p.lat.toFixed(6),+p.lng.toFixed(6),Math.round(speed*3.6)]);track.dirty=true;
-  if(!$('viewEdit').hidden)renderTrack();
-}
-function trackStart(){
-  if(sim.on){$('gpsWarn').hidden=false;$('trackNote').textContent='먼저 실제 GPS를 켜 주세요.';return;}
-  const t=T();
-  if(!t.routeRecorded){ // 처음 기록: 예시 경로와 예시 지점을 걷어냄 (직접 찍은 지점은 남김)
-    const ex=new Set(((published[t.id]||{}).points||[]).map(p=>p.id));
-    t.points=t.points.filter(p=>!ex.has(p.id));t.route=[];t.routeRecorded=true;delete t.note;
-  }
-  track.on=true;keepAwake();
-  track.saveIv=setInterval(()=>{if(track.dirty){track.dirty=false;save();}},3000);
-  if(lastPos)trackAdd(lastPos);
-  save();simBuild();resetState();renderTrack();renderEditList();drawMap();
-}
-function trackStop(){
-  track.on=false;clearInterval(track.saveIv);track.dirty=false;
-  if(lastPos)trackAdd(lastPos);
-  sortPoints();save();simBuild();resetState();renderTrack();renderEditList();
-  if(!running){try{wake&&wake.release()}catch(e){}}
-}
-$('trackBtn').onclick=()=>track.on?trackStop():trackStart();
-$('gpsOnBtn').onclick=()=>{setSource('gps');renderEdit();};
-let clearArm=0;
-$('clearCourse').onclick=()=>{
-  if(Date.now()-clearArm>4000){clearArm=Date.now();$('clearCourse').textContent='한 번 더 누르면 경로와 지점이 지워져요';setTimeout(()=>{$('clearCourse').textContent='이 코스 처음부터 다시';},4000);return;}
-  if(track.on)trackStop();
-  const t=T();t.route=[];t.points=[];t.routeRecorded=false;delete t.note;clearArm=0;
-  $('clearCourse').textContent='이 코스 처음부터 다시';
-  save();simBuild();resetState();renderEdit();drawMap();
-};
-$('cTitle').onchange=e=>{T().title=e.target.value;save();fillCourseSel();};
-$('addPt').onclick=()=>{
-  const p=lastPos||(sim.on?simPos():null);
-  if(!p){$('posNote').textContent='아직 위치가 없어요. 주행 탭에서 GPS나 시뮬레이션을 켜 주세요.';return;}
-  T().points.push({id:'p'+Date.now().toString(36),title:'새 지점',side:'',script:'',lat:+p.lat.toFixed(6),lng:+p.lng.toFixed(6),cue:0,cueAuto:true,maxLead:300,audio:null,image:null});
-  // 경로 기록 중이면 누른 순서가 곧 진행 순서, 아니면 경로 위치 순으로 정렬
-  if(!track.on)sortPoints();save();resetState();renderTrack();renderEditList();drawMap();
-  const b=$('addPt');b.textContent=`✓ ${T().points.length}번 지점 추가됨`;setTimeout(()=>{b.textContent='지금 위치에 지점 추가';},1800);
-};
-function sortPoints(){const r=T().route;if(!r||r.length<2)return;
-  const proj=p=>{let best=1e12,bs=0,acc=0;for(let i=1;i<r.length;i++){const a={lat:r[i-1][0],lng:r[i-1][1]},b={lat:r[i][0],lng:r[i][1]};const d=dist(a,b);
-    for(let k=0;k<=20;k++){const q={lat:a.lat+(b.lat-a.lat)*k/20,lng:a.lng+(b.lng-a.lng)*k/20};const dd=dist(q,p);if(dd<best){best=dd;bs=acc+d*k/20;}}acc+=d;}return bs;};
-  T().points.sort((x,y)=>proj(x)-proj(y));}
-
-let rec=null;
-function renderEditList(){
-  if($('viewEdit').hidden)return;
-  const L=$('ptList');const pts=T().points;
-  L.innerHTML=pts.map((p,i)=>{const st=state[i]?.st||'waiting';const lbl={waiting:'대기',pending:'대기',playing:'재생 중',done:'들음',missed:'지나침',silent:'대본 없음'}[st];
-    return `<div class="pt" data-i="${i}">
-      <div class="hd"><span class="n">${i+1}</span><input type="text" data-f="title" value="${esc(p.title)}" aria-label="지점 이름"><span class="chip ${st}">${lbl}</span></div>
-      <div class="meta">${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}</div>
-      <label class="fld">대본<textarea data-f="script" rows="3">${esc(p.script)}</textarea></label>
-      <div class="row">
-        <label class="fld">방향<select data-f="side"><option value="" ${!p.side?'selected':''}>없음</option><option ${p.side==='왼쪽'?'selected':''}>왼쪽</option><option ${p.side==='오른쪽'?'selected':''}>오른쪽</option></select></label>
-        <label class="fld">도착 시점(초)${p.cueAuto?' · 추정':''}<input type="number" step="0.1" min="0" data-f="cue" value="${p.cue}"></label>
-        <label class="fld">최대 거리(m)<input type="number" step="10" min="40" data-f="maxLead" value="${p.maxLead||300}"></label>
-      </div>
-      <div class="row">
-        <button data-a="rec">${rec&&rec.i===i?'녹음 멈춤':'대본 메모 녹음'}</button>
-        <button data-a="mark" ${rec&&rec.i===i?'':'disabled'}>도착 순간 표시</button>
-        ${rec&&rec.i===i?`<span class="rec" id="recT">● 0.0s</span>`:''}
-        ${p.audio?`<button data-a="play">녹음 듣기</button><button class="ghost" data-a="delAudio">녹음 지우기</button>`:''}
-      </div>
-      <div class="row">
-        <label class="fld">이미지<input type="file" accept="image/*" data-f="image"></label>
-        ${p.image?`<button class="ghost" data-a="delImg">이미지 지우기</button>`:''}
-      </div>
-      <div class="row">
-        <button class="ghost" data-a="here">이 지점 위치를 지금 위치로</button>
-        <button class="ghost" data-a="del">지점 삭제</button>
-      </div>
-    </div>`;}).join('')||'<p class="note">아직 지점이 없어요.</p>';
-}
-$('ptList').addEventListener('change',async e=>{
-  const box=e.target.closest('.pt');if(!box)return;const p=T().points[+box.dataset.i];const f=e.target.dataset.f;if(!f)return;
-  if(f==='image'){const file=e.target.files[0];if(!file)return;p.image=await shrinkImage(file);}
-  else if(f==='cue'){p.cue=+e.target.value||0;p.cueAuto=false;}
-  else if(f==='maxLead'){p.maxLead=+e.target.value||300;}
-  else{p[f]=e.target.value;if(f==='script'&&p.cueAuto&&!p.audio)p.cue=estimateCue(p.script);}
-  save();if(f==='script')resetState();renderEditList();
+async function keepAwake(){try{if('wakeLock' in navigator&&document.visibilityState==='visible')wake=await navigator.wakeLock.request('screen');}catch(e){}}
+document.addEventListener('visibilitychange',async()=>{
+  if(document.visibilityState!=='visible'||phase==='ready'||phase==='ended')return;
+  keepAwake();
+  if(ac&&ac.state!=='running'){try{await ac.resume();}catch(e){}}
+  if(ac&&ac.state!=='running')$('scrResume').hidden=false;
 });
-$('ptList').addEventListener('click',async e=>{
-  const b=e.target.closest('button');if(!b)return;const box=b.closest('.pt');const i=+box.dataset.i;const p=T().points[i];const a=b.dataset.a;
-  if(a==='del'){T().points.splice(i,1);save();resetState();renderEditList();}
-  else if(a==='here'){const q=lastPos||(sim.on?simPos():null);if(q){p.lat=+q.lat.toFixed(6);p.lng=+q.lng.toFixed(6);save();renderEditList();}}
-  else if(a==='delImg'){p.image=null;save();renderEditList();}
-  else if(a==='delAudio'){p.audio=null;p.cueAuto=true;p.cue=estimateCue(p.script);save();renderEditList();}
-  else if(a==='play'){await audioStart();if(!running)bgmGain.gain.value=0;playNarration(p,()=>{});}
-  else if(a==='mark'&&rec&&rec.i===i){p.cue=Math.round((performance.now()-rec.t0)/100)/10;p.cueAuto=false;save();box.querySelector('[data-f=cue]').value=p.cue;}
-  else if(a==='rec'){
-    if(rec&&rec.i===i){rec.mr.stop();return;}
-    if(rec)return;
-    try{
-      const ms=await navigator.mediaDevices.getUserMedia({audio:true});
-      const mr=new MediaRecorder(ms);const chunks=[];
-      mr.ondataavailable=ev=>chunks.push(ev.data);
-      mr.onstop=()=>{ms.getTracks().forEach(t=>t.stop());clearInterval(rec.iv);
-        const fr=new FileReader();fr.onload=()=>{p.audio=fr.result;rec=null;save();renderEditList();};fr.readAsDataURL(new Blob(chunks,{type:mr.mimeType}));};
-      rec={i,mr,t0:performance.now(),iv:setInterval(()=>{const el=$('recT');if(el)el.textContent=`● ${((performance.now()-rec.t0)/1000).toFixed(1)}s`;},100)};
-      mr.start();renderEditList();
-    }catch(err){$('posNote').textContent='마이크를 쓸 수 없어요. 이 미리보기에서는 막혀 있고, 실제 주소(https)로 올린 페이지에서 작동합니다. 도착 시점은 숫자로 직접 넣을 수 있어요.';}
-  }
-});
-function shrinkImage(file){return new Promise(res=>{const img=new Image();img.onload=()=>{const m=1200,k=Math.min(1,m/Math.max(img.width,img.height));
-  const c=document.createElement('canvas');c.width=img.width*k;c.height=img.height*k;c.getContext('2d').drawImage(img,0,0,c.width,c.height);res(c.toDataURL('image/jpeg',.82));URL.revokeObjectURL(img.src);};img.src=URL.createObjectURL(file);});}
-
-$('jsonOut').onclick=()=>{$('json').value=JSON.stringify(clean(T()),null,1);$('jsonNote').textContent=`내보냄 · 약 ${Math.round($('json').value.length/1024)}KB`;};
-$('jsonCopy').onclick=()=>{const v=$('json').value;navigator.clipboard.writeText(v).then(()=>$('jsonNote').textContent='복사했어요',()=>{$('json').select();$('jsonNote').textContent='자동 복사가 막혀 있어 내용을 선택해 두었어요. 직접 복사해 주세요.';});};
-$('jsonOutAll').onclick=()=>{$('json').value=JSON.stringify(trails.map(clean));$('jsonNote').textContent=`${trails.length}개 코스 내보냄 · 약 ${Math.round($('json').value.length/1024)}KB · 복사해서 Claude에게 붙여넣어 주세요`;};
-$('jsonIn').onclick=()=>{try{let v=JSON.parse($('json').value);const list=Array.isArray(v)?v:[v];if(!list.length||list.some(t=>!t.points))throw 0;
-  const keep=T().id;for(const t of list){t.id=t.id||'c'+Date.now();const i=trails.findIndex(x=>x.id===t.id);if(i>=0)trails[i]=t;else trails.push(t);cur=trails.indexOf(t);save();}
-  const k=trails.findIndex(x=>x.id===keep);if(list.length>1&&k>=0)cur=k;
-  fillCourseSel();simBuild();resetState();renderEdit();$('jsonNote').textContent=`${list.length}개 코스를 불러왔어요`;}catch(e){$('jsonNote').textContent='트레일 JSON 형식이 아니에요. 내보내기로 만든 내용을 그대로 붙여넣어 주세요.';}};
-$('resetSample').onclick=()=>{const id=T().id;try{localStorage.removeItem(draftKey(id))}catch(e){}
-  if(published[id]){trails[cur]=JSON.parse(JSON.stringify(published[id]));$('jsonNote').textContent='이 폰의 초안을 지우고 공개본으로 되돌렸어요';}
-  else $('jsonNote').textContent='공개본이 없는 코스예요. 초안 저장만 지웠어요';
-  fillCourseSel();simBuild();resetState();renderEdit();};
+$('btnResume').onclick=async()=>{try{await ac.resume();}catch(e){}$('scrResume').hidden=true;keepAwake();};
 
 /* ---------- 시작 ---------- */
-loadTrails().then(()=>{fillCourseSel();simBuild();resetState();setSource('sim');drawMap();preload();});
-requestAnimationFrame(simLoop);
+$('btnReady').onclick=async()=>{
+  audioInit();await ac.resume();startBgm();keepAwake();gpsOn();
+  C.points.forEach(p=>{if(p.audio)getBuf(p.audio).then(b=>{p.dur=b.duration;}).catch(()=>{});});
+  (C.points.map(p=>p.screen&&p.screen.images||[]).flat()).concat(C.dest?.arrive?.photo||[]).forEach(u=>{const i=new Image();i.src=u;});
+  phase='wait';show('scrWait');updateGpsChip();
+};
+$('btnGo').onclick=async()=>{
+  try{await ac.resume();}catch(e){}keepAwake();
+  armed=true;phase='drive';show('scrDrive');log('출발 버튼');if(pos)tick();
+};
+
+/* ---------- 개발: 시뮬레이션 ---------- */
+const sim={on:false,go:false,kmh:40,s:0,cur:0,off:0,last:0};
+function simPos(s){for(let i=1;i<R.length;i++){if(CUM[i]>=s){const k=(s-CUM[i-1])/((CUM[i]-CUM[i-1])||1);return {lat:R[i-1].lat+(R[i].lat-R[i-1].lat)*k,lng:R[i-1].lng+(R[i].lng-R[i-1].lng)*k};}}return {...R[R.length-1]};}
+function simLoop(ts){
+  const dt=sim.last?Math.min(.1,(ts-sim.last)/1000):0;sim.last=ts;
+  sim.cur+=((sim.go?sim.kmh:0)-sim.cur)*Math.min(1,dt*.9);sim.s=Math.min(LEN,sim.s+sim.cur/3.6*dt);
+  if(sim.on&&(!sim.fed||ts-sim.fed>1000)){sim.fed=ts;const p=simPos(sim.s);const n=()=>(Math.random()-.5)*10;
+    onPos({lat:p.lat+n()/110540,lng:p.lng+(n()+sim.off)/(111320*Math.cos(p.lat*rad)),t:Date.now(),speed:sim.cur/3.6,acc:5});}
+  requestAnimationFrame(simLoop);
+}
+if(DEV){
+  $('dev').hidden=false;
+  $('dSim').onclick=()=>{sim.on=true;log('시뮬레이션 켬');};$('dGps').onclick=()=>{sim.on=false;log('GPS');};
+  $('dRun').onclick=()=>{sim.on=true;sim.go=true;};$('dStop').onclick=()=>{sim.go=false;};
+  $('dOff').onclick=()=>{sim.off=sim.off?0:150;log(sim.off?'이탈 흉내 시작':'이탈 흉내 끝');};
+  $('dSpd').oninput=e=>{sim.kmh=+e.target.value;$('dSpdL').textContent=sim.kmh;};
+  requestAnimationFrame(simLoop);
+}
+window.__dt={get S(){return S},get phase(){return phase},get pts(){return C.points.map(p=>p.title+':'+p.st)},get off(){return offRoute},sim};
+
+loadCourse().catch(e=>{$('rTitle').textContent='코스를 불러오지 못했어요';$('btnReady').disabled=true;});
 if('speechSynthesis' in window)speechSynthesis.getVoices();
 })();
 </script>
-
-</body></html>
+</body>
+</html>

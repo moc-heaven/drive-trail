@@ -996,138 +996,97 @@
  ],
  "points": [
   {
-   "id": "pmvadqnnd",
-   "title": "1번 지점",
-   "side": "",
-   "script": "",
-   "lat": 33.269715,
-   "lng": 126.627709,
-   "cue": 0,
-   "cueAuto": true,
-   "maxLead": 300,
-   "audio": null,
-   "image": null
+   "id": "c1-2",
+   "title": "출발 · 좌회전",
+   "script": "차에 다 타셨고, 우리가 이제 막 출발했습니다. 노란 귤색 리본이 달린 제 차를 잘 따라오고 계시죠? 여기서는 잠깐 좌회전하겠습니다.",
+   "lat": 33.270979,
+   "lng": 126.62789,
+   "mode": "endBy",
+   "offset": 0,
+   "screen": {
+    "type": "arrow",
+    "dir": "left",
+    "label": "좌회전"
+   },
+   "audio": null
   },
   {
-   "id": "pmvadr40p",
-   "title": "2번 지점",
-   "side": "",
-   "script": "",
-   "lat": 33.270822,
-   "lng": 126.627963,
-   "cue": 0,
-   "cueAuto": true,
-   "maxLead": 300,
-   "audio": null,
-   "image": null
+   "id": "c1-3",
+   "title": "귤나무 길과 한라산",
+   "script": "지금 우리가 천천히 가고 있는 이 길 양쪽에는 귤나무들이 있습니다. 아까 우리가 산책할 때 봤었죠? 그러는 중에 오른쪽을 바라보시면 멀리 한라산이 보이고 있습니다.",
+   "lat": 33.270972,
+   "lng": 126.627643,
+   "mode": "at",
+   "offset": 0,
+   "screen": {
+    "type": "image",
+    "caption": "귤나무 길 · 한라산",
+    "images": []
+   },
+   "audio": null
   },
   {
-   "id": "pmvads0bu",
-   "title": "3번 지점",
-   "side": "",
-   "script": "",
-   "lat": 33.27067,
-   "lng": 126.62491,
-   "cue": 0,
-   "cueAuto": true,
-   "maxLead": 300,
-   "audio": null,
-   "image": null
+   "id": "c1-4",
+   "title": "로터리 우회전",
+   "script": "전방의 로터리에서 우회전하겠습니다. 사방에서 오는 차 잘 주시하시고, 우회전 천천히 하겠습니다.",
+   "lat": 33.270285,
+   "lng": 126.623297,
+   "mode": "endBy",
+   "offset": 0,
+   "screen": {
+    "type": "arrow",
+    "dir": "rotary-right",
+    "label": "로터리 우회전"
+   },
+   "audio": null
   },
   {
-   "id": "pmvadsczt",
-   "title": "4번 지점",
-   "side": "",
-   "script": "",
-   "lat": 33.2703,
-   "lng": 126.623346,
-   "cue": 0,
-   "cueAuto": true,
-   "maxLead": 300,
-   "audio": null,
-   "image": null
-  },
-  {
-   "id": "pmvadsr1b",
-   "title": "5번 지점",
-   "side": "",
-   "script": "",
+   "id": "c1-5",
+   "title": "하례 내창",
+   "script": "우리가 지금 가고 있는 이 길 왼편에는, 지금 차에서는 잘 보이지 않지만 하례의 내창이 흐르고 있습니다. 그 길을 따라 올라가고 있어요. 한라산 꼭대기에서부터 출발해 쇠소깍에 이르기까지 흘러가는 하례 내창은 유네스코 생물권 보전지역으로, 별씨마을의 보물 같은 하천이에요. 지금 이 길은 봄이 되면 벚꽃이 흐드러지게 피어서 아주 예쁜 벚꽃길로 변한답니다.",
    "lat": 33.27106,
    "lng": 126.623067,
-   "cue": 0,
-   "cueAuto": true,
-   "maxLead": 300,
-   "audio": null,
-   "image": null
+   "mode": "at",
+   "offset": 0,
+   "screen": {
+    "type": "image",
+    "caption": "하례 내창",
+    "images": []
+   },
+   "audio": null
   },
   {
-   "id": "pmvadtyep",
-   "title": "6번 지점",
-   "side": "",
-   "script": "",
-   "lat": 33.275428,
-   "lng": 126.622376,
-   "cue": 0,
-   "cueAuto": true,
-   "maxLead": 300,
-   "audio": null,
-   "image": null
-  },
-  {
-   "id": "pmvaduktx",
-   "title": "7번 지점",
-   "side": "",
-   "script": "",
-   "lat": 33.277876,
-   "lng": 126.622978,
-   "cue": 0,
-   "cueAuto": true,
-   "maxLead": 300,
-   "audio": null,
-   "image": null
-  },
-  {
-   "id": "pmvaduz62",
-   "title": "8번 지점",
-   "side": "",
-   "script": "",
+   "id": "c1-8",
+   "title": "별씨오름 걸서악",
+   "script": "지금 왼편 멀리 보면 전망대가 보이는 작은 오름이 있어요. 거기가 우리가 별씨오름이라고 부르는 하례마을의 오름, 걸서악입니다.",
    "lat": 33.279595,
    "lng": 126.62237,
-   "cue": 0,
-   "cueAuto": true,
-   "maxLead": 300,
-   "audio": null,
-   "image": null
+   "mode": "at",
+   "offset": 0,
+   "screen": {
+    "type": "image",
+    "caption": "별씨오름 · 걸서악",
+    "images": []
+   },
+   "audio": null
   },
   {
-   "id": "pmvadv71r",
-   "title": "9번 지점",
-   "side": "",
-   "script": "",
-   "lat": 33.280502,
-   "lng": 126.622119,
-   "cue": 0,
-   "cueAuto": true,
-   "maxLead": 300,
-   "audio": null,
-   "image": null
-  },
-  {
-   "id": "pmvadvjz0",
-   "title": "10번 지점",
-   "side": "",
-   "script": "",
-   "lat": 33.281802,
-   "lng": 126.621611,
-   "cue": 0,
-   "cueAuto": true,
-   "maxLead": 300,
-   "audio": null,
-   "image": null
+   "id": "c1-9",
+   "title": "백 살 넘은 소나무 · 도착 예고",
+   "script": "이제 저 멀리 앞쪽에 커다란 소나무 하나가 정면에 보이시나요? 우리가 도착할 지점입니다. 백 살도 넘은 커다란 소나무 아래, 하례생태관광센터와 별씨살롱 내창카페가 있는 곳이에요. 우리가 점심식사를 할 장소예요. 센터 주차장이 복잡하다면, 길 양편 노견에 세워 주시면 됩니다.",
+   "lat": 33.281927,
+   "lng": 126.621562,
+   "mode": "endBy",
+   "offset": 0,
+   "screen": {
+    "type": "image",
+    "caption": "백 살 넘은 소나무",
+    "images": []
+   },
+   "audio": null
   }
  ],
- "routeRecorded": true,
- "note": "현장 기록 2026-10-16. 지점 이름은 임시, 대본은 현장 메모.",
+ "note": "2026-10-16 대본 정리본 반영. 녹음 전이라 임시로 음성 합성이 읽음.",
  "origin": {
   "name": "수둠모루",
   "address": "제주특별자치도 서귀포시 남원읍 하신로187번길 29",
@@ -1139,6 +1098,15 @@
   "address": "제주특별자치도 서귀포시 남원읍 하례로 393-1",
   "parking": "건물 1층 주차장 우선(전기차 충전 자리 1곳). 자리가 없으면(차 안에서 바로 보임) 건물 앞 도로 양쪽 노견에 주차(도착 기준 왼쪽·오른쪽 모두 가능).",
   "lat": 33.282201,
-  "lng": 126.621429
+  "lng": 126.621429,
+  "arrive": {
+   "photo": null,
+   "text": "센터 1층 주차장에 자리가 있으면 들어가셔도 되고, 복잡하면 건물 앞 길 양편 노견에 세워 주세요.",
+   "next": "주차하시고 인솔자를 따라 함께 모여 주세요."
+  }
+ },
+ "routeRecorded": true,
+ "offRoute": {
+  "say": "길이 조금 엇갈린 것 같아요. 안전한 곳에 잠시 멈춘 뒤 화면을 봐 주세요."
  }
 }

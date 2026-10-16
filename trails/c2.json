@@ -1726,112 +1726,125 @@
  ],
  "points": [
   {
-   "id": "pmvadxl9t",
-   "title": "출발 · 오름 쪽으로",
-   "side": "",
-   "script": "출발하겠습니다. 저멀리 바다와 섬이 보이는 곳 야트막한 언덕 오름 앞으로.",
-   "lat": 33.28172,
-   "lng": 126.621606,
-   "cue": 0,
-   "cueAuto": true,
-   "maxLead": 300,
-   "audio": null,
-   "image": null
+   "id": "c2-1",
+   "title": "예촌망을 향해",
+   "script": "출발하겠습니다. 저 멀리 바다 쪽을 내려다보면 바다도 보이고 작은 섬도 보일 텐데요. 그 바로 앞에 야트막한 언덕같이 생긴 오름이 하나 있습니다. 예촌망이라는 오름인데, 그 앞까지 우리가 내려가려고 합니다.",
+   "lat": 33.280858,
+   "lng": 126.621894,
+   "mode": "at",
+   "offset": 0,
+   "screen": {
+    "type": "image",
+    "caption": "예촌망 · 쇠소깍산물관광농원",
+    "images": []
+   },
+   "audio": null
   },
   {
-   "id": "pmvadzo7h",
-   "title": "하례점빵 · 로타리 좌회전",
-   "side": "",
-   "script": "하례점빵. 곧 로타리에서 좌회전",
-   "lat": 33.271571,
-   "lng": 126.623214,
-   "cue": 0,
-   "cueAuto": true,
-   "maxLead": 300,
-   "audio": null,
-   "image": null
+   "id": "c2-2",
+   "title": "하례점빵 · 로터리 좌회전",
+   "script": "우리가 아까 왔던 길이죠. 지금 왼편을 보시면 하례점빵이 있어요. 옛날 제주의 제사상에 올라가던 상웨떡을 직접 만들어서 판매도 하고, 만드는 체험도 진행하고 있습니다. 언제 기회가 되시면 꼭 드셔 보세요. 전방의 로터리에서 좌회전하겠습니다.",
+   "lat": 33.27015,
+   "lng": 126.623079,
+   "mode": "endBy",
+   "offset": 0,
+   "screen": {
+    "type": "arrow",
+    "dir": "rotary-left",
+    "label": "로터리 좌회전"
+   },
+   "audio": null
   },
   {
-   "id": "pmvae1f14",
-   "title": "우회전",
-   "side": "",
-   "script": "우회전",
-   "lat": 33.270721,
-   "lng": 126.630156,
-   "cue": 0,
-   "cueAuto": true,
-   "maxLead": 300,
-   "audio": null,
-   "image": null
+   "id": "c2-3",
+   "title": "우회전 · 마을길",
+   "script": "우회전 조심하시고, 교차로 조심하세요. 여기서부터는 길이 조금 좁아지는 마을로 들어서니까 천천히 가겠습니다.",
+   "lat": 33.270685,
+   "lng": 126.630342,
+   "mode": "endBy",
+   "offset": 0,
+   "screen": {
+    "type": "arrow",
+    "dir": "right",
+    "label": "우회전"
+   },
+   "audio": null
   },
   {
-   "id": "pmvae2rkz",
-   "title": "교차로 주의",
-   "side": "",
-   "script": "교차로 조심",
-   "lat": 33.266902,
-   "lng": 126.629583,
-   "cue": 0,
-   "cueAuto": true,
-   "maxLead": 300,
-   "audio": null,
-   "image": null
+   "id": "c2-4",
+   "title": "작은 사거리 주의",
+   "script": "여기 작은 사거리가 나옵니다. 마을의 좁은 길이지만 마을 주민들이 제일 많이 다니는 길이라 사방에서 차가 올 수 있어요. 조심해 주세요.",
+   "lat": 33.266866,
+   "lng": 126.629525,
+   "mode": "endBy",
+   "offset": 0,
+   "screen": {
+    "type": "arrow",
+    "dir": "straight",
+    "label": "사거리 · 주의"
+   },
+   "audio": null
   },
   {
-   "id": "pmvae3ooq",
-   "title": "신호에서 직진",
-   "side": "",
-   "script": "신호에서 직진",
+   "id": "c2-5",
+   "title": "일주도로 건너 직진",
+   "script": "이번 교차로에서는 일주도로, 큰길을 건너서 직진하겠습니다. 신호를 놓쳐도 서두르지 마세요.",
    "lat": 33.263746,
    "lng": 126.628939,
-   "cue": 0,
-   "cueAuto": true,
-   "maxLead": 300,
-   "audio": null,
-   "image": null
+   "mode": "endBy",
+   "offset": 0,
+   "screen": {
+    "type": "arrow",
+    "dir": "straight",
+    "label": "직진"
+   },
+   "audio": null
   },
   {
-   "id": "pmvae4k46",
-   "title": "바닷가 언덕 앞 · 우회전",
-   "side": "",
-   "script": "바닷가 언덕앞 도착. 우회전",
-   "lat": 33.260568,
-   "lng": 126.630203,
-   "cue": 0,
-   "cueAuto": true,
-   "maxLead": 300,
-   "audio": null,
-   "image": null
+   "id": "c2-6",
+   "title": "예촌망 앞 · 우회전",
+   "script": "출발 지점에서 우리가 봤던 바닷가 앞 예촌망 언덕 앞에 거의 도착했습니다. 여기서 우회전해서 우리가 가려는 쇠소깍산물관광농원으로 향하겠습니다.",
+   "lat": 33.260032,
+   "lng": 126.630231,
+   "mode": "endBy",
+   "offset": 0,
+   "screen": {
+    "type": "arrow",
+    "dir": "right",
+    "label": "우회전"
+   },
+   "audio": null
   },
   {
-   "id": "pmvae56gz",
-   "title": "오른쪽 한라산",
-   "side": "",
-   "script": "오른쪽 한라산뷰",
-   "lat": 33.25909,
-   "lng": 126.627744,
-   "cue": 0,
-   "cueAuto": true,
-   "maxLead": 300,
-   "audio": null,
-   "image": null
+   "id": "c2-7",
+   "title": "한라산 뷰",
+   "script": "길 양쪽에 노지 귤밭이 쭉 펼쳐져 있는데요. 여기가 아름다운 한라산 뷰를 자랑하는 곳이에요. 오른쪽 먼 곳을 봐 주시면 한라산이 멋지게 보인답니다.",
+   "lat": 33.259822,
+   "lng": 126.629729,
+   "mode": "at",
+   "offset": 0,
+   "screen": {
+    "type": "image",
+    "caption": "한라산 뷰",
+    "images": []
+   },
+   "audio": null
   },
   {
-   "id": "pmvae5n34",
-   "title": "도착 · 주차 안내",
-   "side": "",
-   "script": "도착지점 안내. 주차.",
-   "lat": 33.25842,
-   "lng": 126.6248,
-   "cue": 0,
-   "cueAuto": true,
-   "maxLead": 300,
-   "audio": null,
-   "image": null
+   "id": "c2-8",
+   "title": "산물관광농원 도착",
+   "script": "이제 왼편으로 보이는 산물관광농원 앞에 다다랐습니다. 좌회전 후 다른 차량 통행에 피해가 가지 않도록 주변 갓길에 주차하시면 됩니다. 주차하시고 인솔자를 따라 함께 모여 주세요.",
+   "lat": 33.258428,
+   "lng": 126.624322,
+   "mode": "endBy",
+   "offset": 0,
+   "screen": {
+    "type": "arrive"
+   },
+   "audio": null
   }
  ],
- "routeRecorded": true,
- "note": "현장 기록 2026-10-16. 지점 이름은 임시, 대본은 현장 메모.",
+ "note": "2026-10-16 대본 정리본 반영. 녹음 전이라 임시로 음성 합성이 읽음.",
  "origin": {
   "name": "하례생태관광센터",
   "address": "제주특별자치도 서귀포시 남원읍 하례로 393-1",
@@ -1843,6 +1856,15 @@
   "address": "제주특별자치도 서귀포시 남원읍 하례로 90",
   "parking": "별도 주차장 없음. 정문 앞 노견 주차로 안내.",
   "lat": 33.258227,
-  "lng": 126.624185
+  "lng": 126.624185,
+  "arrive": {
+   "photo": null,
+   "text": "좌회전한 뒤, 다른 차량 통행에 피해가 가지 않도록 주변 갓길 한쪽에 붙여 세워 주세요.",
+   "next": "주차하시고 인솔자를 따라 함께 모여 주세요."
+  }
+ },
+ "routeRecorded": true,
+ "offRoute": {
+  "say": "길이 조금 엇갈린 것 같아요. 안전한 곳에 잠시 멈춘 뒤 화면을 봐 주세요."
  }
 }

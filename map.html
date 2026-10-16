@@ -91,7 +91,7 @@ const rad=Math.PI/180;
 const dist=(a,b)=>{const dLa=(b[0]-a[0])*rad,dLo=(b[1]-a[1])*rad;const s=Math.sin(dLa/2)**2+Math.cos(a[0]*rad)*Math.cos(b[0]*rad)*Math.sin(dLo/2)**2;return 2*6371000*Math.asin(Math.sqrt(s));};
 const median=a=>{const s=[...a].sort((x,y)=>x-y);return s.length?s[Math.floor(s.length/2)]:0;};
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const typeColor=p=>({story:'var(--story)',nav:'var(--nav)',arrive:'var(--arrive)'}[p.kind]||(p.script?'var(--story)':'var(--none)'));
+const typeColor=p=>({image:'var(--story)',arrow:'var(--nav)',arrive:'var(--arrive)'}[p.screen&&p.screen.type]||(p.script?'var(--story)':'var(--none)'));
 const spdColor=v=>v<15?'#d9775b':v<30?'#e6c35c':v<40?'#86c77f':'#6fa8c9';
 
 const map=L.map('map',{zoomControl:true});
