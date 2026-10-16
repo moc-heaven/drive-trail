@@ -147,11 +147,28 @@ input[type=range]{width:100%;accent-color:var(--accent)}
   <!-- 기록 -->
   <section id="viewEdit" class="wrap" style="padding:0" hidden>
     <div class="panel">
-      <h3>코스</h3>
+      <h3>기록할 코스</h3>
+      <div class="seg" id="editCourseSeg"></div>
       <label class="fld">코스 이름<input type="text" id="cTitle"></label>
-      <p class="note">현장에서: 지점 위치에 서서 <b>지금 위치에 지점 추가</b> → 대본 메모를 녹음하며 소나무가 보여야 할 순간에 <b>도착 순간 표시</b>. 그 초가 '도착 시점'이 됩니다.</p>
+      <div class="row" id="gpsWarn" hidden>
+        <p class="note warn" style="margin:0;flex:1">지금은 시뮬레이션 위치예요. 현장 기록은 실제 GPS로 해야 해요.</p>
+        <button class="primary" id="gpsOnBtn">실제 GPS 켜기</button>
+      </div>
       <p class="note" id="posNote">현재 위치: –</p>
-      <button class="primary" id="addPt">지금 위치에 지점 추가</button>
+    </div>
+    <div class="panel">
+      <h3>1 · 경로 기록</h3>
+      <p class="note">출발지에서 <b>경로 기록 시작</b>을 누르고 도착지에서 <b>경로 기록 끝</b>을 누르세요. 달린 길과 속도가 함께 저장돼요. 화면은 켠 채로 두세요.</p>
+      <p class="note" id="trackNote">아직 기록한 경로가 없어요.</p>
+      <div class="row">
+        <button class="primary" id="trackBtn">경로 기록 시작</button>
+        <button class="ghost" id="clearCourse">이 코스 처음부터 다시</button>
+      </div>
+    </div>
+    <div class="panel">
+      <h3>2 · 해설 지점</h3>
+      <p class="note">이야기 대상(소나무 등)이 보이는 자리에서 누르세요. 경로 기록 중에도 누를 수 있어요. 이름과 대본은 나중에 고쳐도 돼요.</p>
+      <button class="primary big" id="addPt">지금 위치에 지점 추가</button>
     </div>
     <div id="ptList" class="wrap" style="padding:0;gap:10px"></div>
     <div class="panel">
@@ -159,7 +176,8 @@ input[type=range]{width:100%;accent-color:var(--accent)}
       <p class="note">기록 탭에서 고친 내용은 이 폰에만 '초안'으로 저장돼요. 참여자에게 보이게 하려면 내보낸 내용을 Claude에게 전달해 서버에 올리면 됩니다. 녹음 메모와 이미지도 함께 들어갑니다.</p>
       <textarea id="json" rows="6" spellcheck="false"></textarea>
       <div class="row">
-        <button id="jsonOut">현재 코스 내보내기</button>
+        <button class="primary" id="jsonOutAll">모든 코스 내보내기</button>
+        <button id="jsonOut">현재 코스만 내보내기</button>
         <button id="jsonCopy">복사</button>
         <button id="jsonIn">붙여넣은 내용 불러오기</button>
         <button class="ghost" id="resetSample">이 폰의 초안 지우기</button>
@@ -331,7 +349,7 @@ function onPosition(pos){
   if(lastPos){const dt=(pos.t-lastPos.t)/1000;if(dt>0){
     const raw=(pos.speed!=null&&pos.speed>=0)?pos.speed:dist(lastPos,pos)/dt;
     speed=speed*.55+raw*.45;}}
-  lastPos=pos;updatePosNote(pos);
+  lastPos=pos;updatePosNote(pos);if(track.on)trackAdd(pos);
   if(!running){renderStatus(pos);drawMap();return;}
   const i=target();
   if(i>=0){
@@ -456,6 +474,7 @@ function setSource(s){
   $('simCtl').hidden=!sim.on;$('srcNote').className='note';
   if(sim.on){gpsOff();$('srcNote').textContent='시뮬레이션은 지도 위 가상 차량이 코스를 달리며 같은 재생 규칙을 시험합니다.';}
   else{sim.go=false;$('srcNote').textContent='폰 GPS를 씁니다. 화면을 켠 채 거치대에 두세요.';lastPos=null;gpsOn();}
+  $('gpsWarn').hidden=!sim.on;
   drawMap();
 }
 $('srcSim').onclick=()=>setSource('sim');$('srcGps').onclick=()=>setSource('gps');
@@ -464,7 +483,8 @@ $('simGo').onclick=()=>{sim.go=true;};
 $('simStop').onclick=()=>{sim.go=false;};
 $('simReset').onclick=()=>{sim.go=false;simKmh=0;sim.s=0;resetState();drawMap();logLine('시뮬레이션 처음으로');};
 
-$('courseSel').onchange=e=>{cur=+e.target.value;if(running)$('startBtn').click();simBuild();resetState();renderEdit();drawMap();preload();};
+function selectCourse(i){if(track.on)trackStop();cur=i;$('courseSel').value=i;if(running)$('startBtn').click();simBuild();resetState();renderEdit();drawMap();preload();}
+$('courseSel').onchange=e=>selectCourse(+e.target.value);
 
 /* ---------- 탭 ---------- */
 function tab(which){const e=which==='edit';$('viewEdit').hidden=!e;$('viewPlay').hidden=e;$('tabEdit').setAttribute('aria-selected',e);$('tabPlay').setAttribute('aria-selected',!e);if(e)renderEdit();else drawMap();}
@@ -472,14 +492,69 @@ $('tabPlay').onclick=()=>tab('play');$('tabEdit').onclick=()=>tab('edit');
 
 /* ---------- 기록 모드 ---------- */
 function updatePosNote(p){$('posNote').textContent=p?`현재 위치: ${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}${p.acc!=null?` (±${Math.round(p.acc)}m)`:''} · ${sim.on?'시뮬레이션':'GPS'}`:'현재 위치: –';}
-function renderEdit(){$('cTitle').value=T().title;renderEditList();}
+function renderEdit(){
+  $('cTitle').value=T().title;
+  $('editCourseSeg').innerHTML=trails.map((t,i)=>`<button data-i="${i}" aria-pressed="${i===cur}">${esc((t.title.split('·')[0]||t.title).trim())}</button>`).join('');
+  $('gpsWarn').hidden=!sim.on;
+  renderTrack();renderEditList();
+}
+$('editCourseSeg').addEventListener('click',e=>{const b=e.target.closest('button');if(b)selectCourse(+b.dataset.i);});
+
+/* ---------- 경로 기록 ---------- */
+const track={on:false,saveIv:0,dirty:false};
+function routeLen(r){let d=0;for(let i=1;i<(r||[]).length;i++)d+=dist({lat:r[i-1][0],lng:r[i-1][1]},{lat:r[i][0],lng:r[i][1]});return d;}
+function renderTrack(){
+  const r=T().route||[],rec=T().routeRecorded;
+  $('trackBtn').textContent=track.on?'경로 기록 끝':(rec&&r.length?'경로 기록 이어서':'경로 기록 시작');
+  $('trackBtn').classList.toggle('primary',!track.on);
+  const km=(routeLen(r)/1000).toFixed(2);
+  $('trackNote').textContent=track.on?`● 기록 중 · ${km} km · 위치 ${r.length}개 · 지점 ${T().points.length}개${lastPos&&lastPos.acc!=null?` · ±${Math.round(lastPos.acc)}m`:''}`
+    :rec&&r.length?`기록한 경로 ${km} km · 위치 ${r.length}개 · 지점 ${T().points.length}개`:'아직 기록한 경로가 없어요. (지금 보이는 길은 예시예요)';
+  $('trackNote').className=track.on?'note rec':'note';
+}
+function trackAdd(p){
+  if(p.acc!=null&&p.acc>35)return; // 오차가 큰 위치는 버림
+  const r=T().route,l=r[r.length-1];
+  if(l&&dist({lat:l[0],lng:l[1]},p)<8)return;
+  r.push([+p.lat.toFixed(6),+p.lng.toFixed(6),Math.round(speed*3.6)]);track.dirty=true;
+  if(!$('viewEdit').hidden)renderTrack();
+}
+function trackStart(){
+  if(sim.on){$('gpsWarn').hidden=false;$('trackNote').textContent='먼저 실제 GPS를 켜 주세요.';return;}
+  const t=T();
+  if(!t.routeRecorded){ // 처음 기록: 예시 경로와 예시 지점을 걷어냄 (직접 찍은 지점은 남김)
+    const ex=new Set(((published[t.id]||{}).points||[]).map(p=>p.id));
+    t.points=t.points.filter(p=>!ex.has(p.id));t.route=[];t.routeRecorded=true;delete t.note;
+  }
+  track.on=true;keepAwake();
+  track.saveIv=setInterval(()=>{if(track.dirty){track.dirty=false;save();}},3000);
+  if(lastPos)trackAdd(lastPos);
+  save();simBuild();resetState();renderTrack();renderEditList();drawMap();
+}
+function trackStop(){
+  track.on=false;clearInterval(track.saveIv);track.dirty=false;
+  if(lastPos)trackAdd(lastPos);
+  sortPoints();save();simBuild();resetState();renderTrack();renderEditList();
+  if(!running){try{wake&&wake.release()}catch(e){}}
+}
+$('trackBtn').onclick=()=>track.on?trackStop():trackStart();
+$('gpsOnBtn').onclick=()=>{setSource('gps');renderEdit();};
+let clearArm=0;
+$('clearCourse').onclick=()=>{
+  if(Date.now()-clearArm>4000){clearArm=Date.now();$('clearCourse').textContent='한 번 더 누르면 경로와 지점이 지워져요';setTimeout(()=>{$('clearCourse').textContent='이 코스 처음부터 다시';},4000);return;}
+  if(track.on)trackStop();
+  const t=T();t.route=[];t.points=[];t.routeRecorded=false;delete t.note;clearArm=0;
+  $('clearCourse').textContent='이 코스 처음부터 다시';
+  save();simBuild();resetState();renderEdit();drawMap();
+};
 $('cTitle').onchange=e=>{T().title=e.target.value;save();fillCourseSel();};
 $('addPt').onclick=()=>{
   const p=lastPos||(sim.on?simPos():null);
   if(!p){$('posNote').textContent='아직 위치가 없어요. 주행 탭에서 GPS나 시뮬레이션을 켜 주세요.';return;}
   T().points.push({id:'p'+Date.now().toString(36),title:'새 지점',side:'',script:'',lat:+p.lat.toFixed(6),lng:+p.lng.toFixed(6),cue:0,cueAuto:true,maxLead:300,audio:null,image:null});
-  // 경로 순서대로 정렬(시뮬레이션 경로가 있을 때)
-  sortPoints();save();resetState();renderEditList();
+  // 경로 기록 중이면 누른 순서가 곧 진행 순서, 아니면 경로 위치 순으로 정렬
+  if(!track.on)sortPoints();save();resetState();renderTrack();renderEditList();drawMap();
+  const b=$('addPt');b.textContent=`✓ ${T().points.length}번 지점 추가됨`;setTimeout(()=>{b.textContent='지금 위치에 지점 추가';},1800);
 };
 function sortPoints(){const r=T().route;if(!r||r.length<2)return;
   const proj=p=>{let best=1e12,bs=0,acc=0;for(let i=1;i<r.length;i++){const a={lat:r[i-1][0],lng:r[i-1][1]},b={lat:r[i][0],lng:r[i][1]};const d=dist(a,b);
@@ -551,7 +626,11 @@ function shrinkImage(file){return new Promise(res=>{const img=new Image();img.on
 
 $('jsonOut').onclick=()=>{$('json').value=JSON.stringify(clean(T()),null,1);$('jsonNote').textContent=`내보냄 · 약 ${Math.round($('json').value.length/1024)}KB`;};
 $('jsonCopy').onclick=()=>{const v=$('json').value;navigator.clipboard.writeText(v).then(()=>$('jsonNote').textContent='복사했어요',()=>{$('json').select();$('jsonNote').textContent='자동 복사가 막혀 있어 내용을 선택해 두었어요. 직접 복사해 주세요.';});};
-$('jsonIn').onclick=()=>{try{const t=JSON.parse($('json').value);if(!t.points)throw 0;t.id=t.id||'c'+Date.now();const i=trails.findIndex(x=>x.id===t.id);if(i>=0)trails[i]=t;else trails.push(t);cur=trails.indexOf(t);save();fillCourseSel();simBuild();resetState();renderEdit();$('jsonNote').textContent='불러왔어요';}catch(e){$('jsonNote').textContent='트레일 JSON 형식이 아니에요. 내보내기로 만든 내용을 그대로 붙여넣어 주세요.';}};
+$('jsonOutAll').onclick=()=>{$('json').value=JSON.stringify(trails.map(clean));$('jsonNote').textContent=`${trails.length}개 코스 내보냄 · 약 ${Math.round($('json').value.length/1024)}KB · 복사해서 Claude에게 붙여넣어 주세요`;};
+$('jsonIn').onclick=()=>{try{let v=JSON.parse($('json').value);const list=Array.isArray(v)?v:[v];if(!list.length||list.some(t=>!t.points))throw 0;
+  const keep=T().id;for(const t of list){t.id=t.id||'c'+Date.now();const i=trails.findIndex(x=>x.id===t.id);if(i>=0)trails[i]=t;else trails.push(t);cur=trails.indexOf(t);save();}
+  const k=trails.findIndex(x=>x.id===keep);if(list.length>1&&k>=0)cur=k;
+  fillCourseSel();simBuild();resetState();renderEdit();$('jsonNote').textContent=`${list.length}개 코스를 불러왔어요`;}catch(e){$('jsonNote').textContent='트레일 JSON 형식이 아니에요. 내보내기로 만든 내용을 그대로 붙여넣어 주세요.';}};
 $('resetSample').onclick=()=>{const id=T().id;try{localStorage.removeItem(draftKey(id))}catch(e){}
   if(published[id]){trails[cur]=JSON.parse(JSON.stringify(published[id]));$('jsonNote').textContent='이 폰의 초안을 지우고 공개본으로 되돌렸어요';}
   else $('jsonNote').textContent='공개본이 없는 코스예요. 초안 저장만 지웠어요';
