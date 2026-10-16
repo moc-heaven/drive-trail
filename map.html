@@ -125,8 +125,11 @@ function draw(){
   for(let i=1;i<a.r.length;i++){
     L.polyline([a.r[i-1].slice(0,2),a.r[i].slice(0,2)],{color:spdColor(a.r[i][2]||0),weight:6,opacity:.95,lineCap:'round'}).addTo(layer);
   }
-  if(t.origin)L.marker([t.origin.lat,t.origin.lng],{icon:L.divIcon({className:'',html:`<div class="end">출발 · ${esc(t.origin.name)}</div>`,iconAnchor:[0,24]})}).addTo(layer);
-  if(t.dest)L.marker([t.dest.lat,t.dest.lng],{icon:L.divIcon({className:'',html:`<div class="end">도착 · ${esc(t.dest.name)}</div>`,iconAnchor:[0,-6]})}).addTo(layer);
+  // 출발·도착: 작은 사각 표시 + 왼쪽으로 비켜난 이름표(번호 표시와 겹치지 않게)
+  const endMk=(o,label)=>{L.circleMarker([o.lat,o.lng],{radius:6,color:'#141a19',weight:2,fillColor:'#ebe6d8',fillOpacity:1}).addTo(layer);
+    L.marker([o.lat,o.lng],{interactive:false,icon:L.divIcon({className:'',html:`<div class="end" style="transform:translateX(-100%)">${label}</div>`,iconAnchor:[14,10]})}).addTo(layer);};
+  if(t.origin)endMk(t.origin,`출발 · ${esc(t.origin.name)}`);
+  if(t.dest)endMk(t.dest,`도착 · ${esc(t.dest.name)}`);
   a.pts.forEach((x,k)=>{
     const p=x.p;
     const m=L.marker([p.lat,p.lng],{icon:L.divIcon({className:'',html:`<div class="mk" style="background:${typeColor(p)}">${k+1}</div>`,iconSize:[26,26],iconAnchor:[13,13]})})
