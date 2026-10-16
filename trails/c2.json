@@ -1738,8 +1738,8 @@
     "caption": "예촌망 · 쇠소깍산물관광농원",
     "images": []
    },
-   "audio": "audio/c2-1.mp3",
-   "audioDur": 17.1
+   "audio": "audio/c2-1.mp3?v=f1",
+   "audioDur": 16.7
   },
   {
    "id": "c2-2",
@@ -1754,8 +1754,8 @@
     "dir": "rotary-left",
     "label": "로터리 좌회전"
    },
-   "audio": "audio/c2-2.mp3",
-   "audioDur": 20.2
+   "audio": "audio/c2-2.mp3?v=f1",
+   "audioDur": 19.6
   },
   {
    "id": "c2-3",
@@ -1770,8 +1770,8 @@
     "dir": "right",
     "label": "우회전"
    },
-   "audio": "audio/c2-3.mp3",
-   "audioDur": 9.6
+   "audio": "audio/c2-3.mp3?v=f1",
+   "audioDur": 9.3
   },
   {
    "id": "c2-4",
@@ -1786,8 +1786,8 @@
     "dir": "straight",
     "label": "사거리 · 주의"
    },
-   "audio": "audio/c2-4.mp3",
-   "audioDur": 11.5
+   "audio": "audio/c2-4.mp3?v=f1",
+   "audioDur": 11.2
   },
   {
    "id": "c2-5",
@@ -1802,8 +1802,8 @@
     "dir": "straight",
     "label": "직진"
    },
-   "audio": "audio/c2-5.mp3",
-   "audioDur": 8.0
+   "audio": "audio/c2-5.mp3?v=f1",
+   "audioDur": 7.8
   },
   {
    "id": "c2-6",
@@ -1818,8 +1818,8 @@
     "dir": "right",
     "label": "우회전"
    },
-   "audio": "audio/c2-6.mp3",
-   "audioDur": 13.4
+   "audio": "audio/c2-6.mp3?v=f1",
+   "audioDur": 13.0
   },
   {
    "id": "c2-7",
@@ -1834,8 +1834,8 @@
     "caption": "한라산 뷰",
     "images": []
    },
-   "audio": "audio/c2-7.mp3",
-   "audioDur": 12.6
+   "audio": "audio/c2-7.mp3?v=f1",
+   "audioDur": 12.3
   },
   {
    "id": "c2-8",
@@ -1848,8 +1848,8 @@
    "screen": {
     "type": "arrive"
    },
-   "audio": "audio/c2-8.mp3",
-   "audioDur": 15.6
+   "audio": "audio/c2-8.mp3?v=f1",
+   "audioDur": 15.1
   }
  ],
  "note": "2026-10-16 대본 정리본 반영. 녹음 전이라 임시로 음성 합성이 읽음.",
@@ -1874,7 +1874,7 @@
  "routeRecorded": true,
  "offRoute": {
   "say": "길이 조금 엇갈린 것 같아요. 안전한 곳에 잠시 멈춘 뒤 화면을 봐 주세요.",
-  "audio": "audio/c2-offroute.mp3"
+  "audio": "audio/c2-offroute.mp3?v=f1"
  },
- "voice": "임시 합성 음성 (Supertonic 3, 여성 3번 목소리). 녹음 전까지 사용"
+ "voice": "임시 합성 음성 (Supertonic 3, 여성 1번 목소리). 녹음 전까지 사용"
 }

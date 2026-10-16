@@ -1008,8 +1008,8 @@
     "dir": "left",
     "label": "좌회전"
    },
-   "audio": "audio/c1-2.mp3",
-   "audioDur": 11.5
+   "audio": "audio/c1-2.mp3?v=f1",
+   "audioDur": 11.2
   },
   {
    "id": "c1-3",
@@ -1024,8 +1024,8 @@
     "caption": "귤나무 길 · 한라산",
     "images": []
    },
-   "audio": "audio/c1-3.mp3",
-   "audioDur": 13.7
+   "audio": "audio/c1-3.mp3?v=f1",
+   "audioDur": 13.3
   },
   {
    "id": "c1-4",
@@ -1040,8 +1040,8 @@
     "dir": "rotary-right",
     "label": "로터리 우회전"
    },
-   "audio": "audio/c1-4.mp3",
-   "audioDur": 8.6
+   "audio": "audio/c1-4.mp3?v=f1",
+   "audioDur": 8.4
   },
   {
    "id": "c1-5",
@@ -1056,8 +1056,8 @@
     "caption": "하례 내창",
     "images": []
    },
-   "audio": "audio/c1-5.mp3",
-   "audioDur": 28.8
+   "audio": "audio/c1-5.mp3?v=f1",
+   "audioDur": 28.3
   },
   {
    "id": "c1-8",
@@ -1072,8 +1072,8 @@
     "caption": "별씨오름 · 걸서악",
     "images": []
    },
-   "audio": "audio/c1-8.mp3",
-   "audioDur": 10.9
+   "audio": "audio/c1-8.mp3?v=f1",
+   "audioDur": 10.5
   },
   {
    "id": "c1-9",
@@ -1088,8 +1088,8 @@
     "caption": "백 살 넘은 소나무",
     "images": []
    },
-   "audio": "audio/c1-9.mp3",
-   "audioDur": 22.8
+   "audio": "audio/c1-9.mp3?v=f1",
+   "audioDur": 22.2
   }
  ],
  "note": "2026-10-16 대본 정리본 반영. 녹음 전이라 임시로 음성 합성이 읽음.",
@@ -1114,7 +1114,7 @@
  "routeRecorded": true,
  "offRoute": {
   "say": "길이 조금 엇갈린 것 같아요. 안전한 곳에 잠시 멈춘 뒤 화면을 봐 주세요.",
-  "audio": "audio/c1-offroute.mp3"
+  "audio": "audio/c1-offroute.mp3?v=f1"
  },
- "voice": "임시 합성 음성 (Supertonic 3, 여성 3번 목소리). 녹음 전까지 사용"
+ "voice": "임시 합성 음성 (Supertonic 3, 여성 1번 목소리). 녹음 전까지 사용"
 }
