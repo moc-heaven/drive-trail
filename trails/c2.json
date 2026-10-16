@@ -1,7 +1,7 @@
 {
  "id": "c2",
  "title": "2코스 · 하례생태관광센터 → 산물관광농원",
- "bgm": null,
+ "bgm": "audio/bgm-ssi-ppurigi.mp3",
  "route": [
   [
    33.282163,
@@ -1876,5 +1876,7 @@
   "say": "길이 조금 엇갈린 것 같아요. 안전한 곳에 잠시 멈춘 뒤 화면을 봐 주세요.",
   "audio": "audio/c2-offroute.mp3?v=f1"
  },
- "voice": "임시 합성 음성 (Supertonic 3, 여성 1번 목소리). 녹음 전까지 사용"
+ "voice": "임시 합성 음성 (Supertonic 3, 여성 1번 목소리). 녹음 전까지 사용",
+ "bgmLevel": 0.85,
+ "bgmTitle": "MOC · 씨 뿌리기"
 }

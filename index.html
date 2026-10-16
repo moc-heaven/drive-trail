@@ -242,7 +242,7 @@ async function loadCourse(){
 }
 
 /* ---------- 소리 ---------- */
-let ac,master,bgmG,narrG,bgmNodes=[],narr=null;const BGM=.5,DUCK=.16;
+let ac,master,bgmG,narrG,bgmNodes=[],narr=null;let BGM=.5;const DUCK=.2;
 function audioInit(){
   if(ac)return;const AC=window.AudioContext||window.webkitAudioContext;ac=new AC();
   master=ac.createGain();master.connect(ac.destination);
@@ -251,9 +251,18 @@ function audioInit(){
 }
 const bufCache={};
 function getBuf(u){return bufCache[u]||(bufCache[u]=fetch(u).then(r=>{if(!r.ok)throw 0;return r.arrayBuffer();}).then(b=>ac.decodeAudioData(b)));}
-async function startBgm(){
+// 배경음악 파일은 통째로 풀지 않고 흘려 재생(긴 곡도 폰 메모리 부담 없음). 누르는 순간 바로 play 해야 아이폰이 허용함
+let bgmEl=null;
+function startBgm(){
   bgmNodes.forEach(n=>{try{n.stop()}catch(e){}});bgmNodes=[];
-  if(C.bgm){try{const b=await getBuf(C.bgm);const s=ac.createBufferSource();s.buffer=b;s.loop=true;s.connect(bgmG);s.start();bgmNodes.push(s);}catch(e){bells();}}else bells();
+  BGM=C.bgm?(C.bgmLevel??.85):.5;
+  if(C.bgm){
+    try{
+      if(!bgmEl){bgmEl=new Audio(C.bgm);bgmEl.loop=true;bgmEl.preload='auto';bgmEl.setAttribute('playsinline','');ac.createMediaElementSource(bgmEl).connect(bgmG);}
+      bgmEl.play().catch(e=>{log('배경음악 재생 실패, 종소리로');bells();});
+      bgmNodes.push({stop(){bgmEl.pause();}});
+    }catch(e){bells();}
+  }else bells();
   bgmG.gain.cancelScheduledValues(ac.currentTime);bgmG.gain.setTargetAtTime(BGM,ac.currentTime,1.5);
 }
 function bells(){ // 임시 배경음: 차 소음(저음역)에 묻히지 않는 중고음역 종소리
@@ -431,9 +440,10 @@ document.addEventListener('visibilitychange',async()=>{
   if(document.visibilityState!=='visible'||phase==='ready'||phase==='ended')return;
   keepAwake();
   if(ac&&ac.state!=='running'){try{await ac.resume();}catch(e){}}
-  if(ac&&ac.state!=='running')$('scrResume').hidden=false;
+  let bgmOk=true;if(bgmEl&&bgmEl.paused){try{await bgmEl.play();}catch(e){bgmOk=false;}}
+  if((ac&&ac.state!=='running')||!bgmOk)$('scrResume').hidden=false;
 });
-$('btnResume').onclick=async()=>{try{await ac.resume();}catch(e){}$('scrResume').hidden=true;keepAwake();};
+$('btnResume').onclick=async()=>{if(bgmEl&&phase!=='ended')bgmEl.play().catch(()=>{});try{await ac.resume();}catch(e){}$('scrResume').hidden=true;keepAwake();};
 
 /* ---------- 시작 ---------- */
 let SIMMODE=false,simLoopOn=false;
@@ -445,12 +455,13 @@ $('sbGo').onclick=()=>{sim.go=!sim.go;$('sbGo').textContent=sim.go?'❚❚ 멈�
 $('sbOff').onclick=()=>{sim.off=sim.off?0:150;$('sbOff').setAttribute('aria-pressed',!!sim.off);$('sbOff').textContent=sim.off?'코스로 돌아오기':'길 벗어나기';};
 $('sbSkip').onclick=()=>{sim.s=Math.min(LEN,sim.s+200);};
 async function prepare(){
-  audioInit();await ac.resume();startBgm();keepAwake();if(!SIMMODE)gpsOn();
+  audioInit();startBgm();await ac.resume();keepAwake();if(!SIMMODE)gpsOn();
   C.points.forEach(p=>{if(p.audio)getBuf(p.audio).then(b=>{p.dur=b.duration;}).catch(()=>{});});
   (C.points.map(p=>p.screen&&p.screen.images||[]).flat()).concat(C.dest?.arrive?.photo||[]).forEach(u=>{const i=new Image();i.src=u;});
   phase='wait';show('scrWait');updateGpsChip();
 };
 $('btnGo').onclick=async()=>{
+  if(bgmEl&&bgmEl.paused)bgmEl.play().catch(()=>{});
   try{await ac.resume();}catch(e){}keepAwake();
   armed=true;phase='drive';show('scrDrive');log('출발 버튼');if(pos)tick();
   if(SIMMODE){$('simBar').hidden=false;sim.go=true;$('sbGo').textContent='❚❚ 멈춤';}
