@@ -341,7 +341,8 @@ function clearStage(){
 
 /* ---------- 재생 규칙 ---------- */
 let running=false,state=[],lastPos=null,speed=0,curLead=0;
-function resetState(){state=T().points.map(()=>({st:'waiting',minD:Infinity}));lastPos=null;speed=0;renderStatus(null);}
+// 대본도 녹음도 없는 지점은 소리 없이 건너뜀. 위치·속도 값은 지우지 않음(지우면 다음 위치에서 속도가 0으로 기록됨)
+function resetState(){state=T().points.map(p=>({st:(p.script||p.audio)?'waiting':'silent',minD:Infinity}));renderStatus(lastPos);}
 function target(){return state.findIndex(s=>s.st==='waiting'||s.st==='pending');}
 
 function onPosition(pos){
@@ -442,7 +443,7 @@ function drawMap(){
   // 지점
   g.font='500 22px "IBM Plex Sans KR",sans-serif';g.textBaseline='middle';
   t.points.forEach((p,i)=>{const [x,y]=P(p);const st=state[i]?.st;
-    g.fillStyle=st==='done'?'#86a77f':st==='missed'?'#d9775b':st==='playing'?'#e6a23c':'#ebe6d8';
+    g.fillStyle=st==='done'?'#86a77f':st==='missed'?'#d9775b':st==='playing'?'#e6a23c':st==='silent'?'#5a6661':'#ebe6d8';
     g.beginPath();g.arc(x,y,10,0,7);g.fill();g.fillStyle='#ebe6d8';g.fillText(`${i+1} ${p.title}`,x+18,y);});
   // 차량
   const car=sim.on?simPos():lastPos;
@@ -565,7 +566,7 @@ let rec=null;
 function renderEditList(){
   if($('viewEdit').hidden)return;
   const L=$('ptList');const pts=T().points;
-  L.innerHTML=pts.map((p,i)=>{const st=state[i]?.st||'waiting';const lbl={waiting:'대기',pending:'대기',playing:'재생 중',done:'들음',missed:'지나침'}[st];
+  L.innerHTML=pts.map((p,i)=>{const st=state[i]?.st||'waiting';const lbl={waiting:'대기',pending:'대기',playing:'재생 중',done:'들음',missed:'지나침',silent:'대본 없음'}[st];
     return `<div class="pt" data-i="${i}">
       <div class="hd"><span class="n">${i+1}</span><input type="text" data-f="title" value="${esc(p.title)}" aria-label="지점 이름"><span class="chip ${st}">${lbl}</span></div>
       <div class="meta">${p.lat.toFixed(5)}, ${p.lng.toFixed(5)}</div>
@@ -597,7 +598,7 @@ $('ptList').addEventListener('change',async e=>{
   else if(f==='cue'){p.cue=+e.target.value||0;p.cueAuto=false;}
   else if(f==='maxLead'){p.maxLead=+e.target.value||300;}
   else{p[f]=e.target.value;if(f==='script'&&p.cueAuto&&!p.audio)p.cue=estimateCue(p.script);}
-  save();renderEditList();
+  save();if(f==='script')resetState();renderEditList();
 });
 $('ptList').addEventListener('click',async e=>{
   const b=e.target.closest('button');if(!b)return;const box=b.closest('.pt');const i=+box.dataset.i;const p=T().points[i];const a=b.dataset.a;
