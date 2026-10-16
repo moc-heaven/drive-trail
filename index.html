@@ -181,8 +181,9 @@ p{margin:0}
 </section>
 
 <div id="dev" hidden>
-  <div class="row"><b>개발</b><span id="devSt"></span></div>
+  <div class="row"><button id="dMin">접기</button><b>개발</b><span id="devSt"></span></div>
   <div class="row"><button id="dSim">시뮬레이션</button><button id="dGps">실제 GPS</button><button id="dRun">달리기</button><button id="dStop">멈춤</button><button id="dOff">이탈</button></div>
+  <div class="row"><button id="dShowOff">이탈 화면 바로 보기</button><button id="dShowArr">도착 화면 바로 보기</button></div>
   <label>속도 <span id="dSpdL">40</span> km/h<input type="range" id="dSpd" min="0" max="120" step="5" value="40"></label>
   <pre id="dLog"></pre>
 </div>
@@ -317,7 +318,7 @@ function tick(){
   if(!armed||phase!=='drive')return;
   // 경로 이탈
   const acc=pos.acc??10;
-  if(!offRoute){if(offD>70&&acc<45&&S>30){offSince=offSince||now;if(now-offSince>12000)setOff(true);}else offSince=0;}
+  if(!offRoute){if(offD>70&&acc<45){offSince=offSince||now;if(now-offSince>12000)setOff(true);}else offSince=0;}
   else{if(offD<35){backSince=backSince||now;if(now-backSince>4000)setOff(false);}else backSince=0;return;}
   // 회전 표시는 지점을 지나면 닫음
   if(arrowFor&&!narr&&S>arrowFor.s+25){arrowFor=null;setLayer('idle');}
@@ -358,13 +359,29 @@ function setupDest(){
   const d=C.dest;if(!d)return;
   $('offName').textContent=d.name;$('offAddr').textContent=d.address;
   const n=encodeURIComponent(d.name);
-  $('navKakao').href=`https://map.kakao.com/link/to/${n},${d.lat},${d.lng}`;
-  $('navNaver').href=`nmap://route/car?dlat=${d.lat}&dlng=${d.lng}&dname=${n}&appname=kr.harye.drive`;
-  $('navTmap').href=`tmap://route?goalname=${n}&goalx=${d.lng}&goaly=${d.lat}`;
+  // 앱을 바로 여는 주소. 앱이 없으면 1.6초 뒤 웹 지도(카카오) 또는 안내 문구로 넘어감
+  NAV={
+    navKakao:{app:`kakaomap://route?ep=${d.lat},${d.lng}&by=car`,web:`https://map.kakao.com/link/to/${n},${d.lat},${d.lng}`},
+    navNaver:{app:`nmap://route/car?dlat=${d.lat}&dlng=${d.lng}&dname=${n}&appname=kr.harye.drive`},
+    navTmap:{app:`tmap://route?rGoName=${n}&rGoX=${d.lng}&rGoY=${d.lat}`}
+  };
+  Object.keys(NAV).forEach(k=>{$(k).href=NAV[k].app;$(k).removeAttribute('target');});
   $('aName').textContent=d.name;const A=d.arrive||{};
   $('aText').textContent=A.text||d.parking||'';$('aNext').textContent=A.next||'';
   if(A.photo)$('aPhoto').innerHTML=`<img src="${encodeURI(A.photo)}" alt="주차 자리">`;
 }
+let NAV={};
+document.querySelector('.navs').addEventListener('click',e=>{
+  const a=e.target.closest('a');if(!a||!NAV[a.id])return;e.preventDefault();
+  const n=NAV[a.id];let left=false;
+  const onHide=()=>{if(document.visibilityState==='hidden')left=true;};document.addEventListener('visibilitychange',onHide);
+  location.href=n.app;
+  setTimeout(()=>{document.removeEventListener('visibilitychange',onHide);
+    if(left)return;
+    if(n.web){location.href=n.web;}
+    else $('copyNote').textContent=`${a.textContent} 앱이 열리지 않았어요. 앱이 없다면 '주소 복사하기'로 평소 쓰는 앱에 붙여넣어 주세요.`;
+  },1600);
+});
 function setOff(on){
   offRoute=on;offSince=0;backSince=0;$('scrOff').hidden=!on;log(on?'경로 이탈':'경로 복귀');
   if(on&&!narr){narr={p:{}};duck(true);speak(C.offRoute?.say||'길이 조금 엇갈린 것 같아요. 안전한 곳에 잠시 멈춘 뒤 화면을 봐 주세요.',()=>{narr=null;duck(false);});}
@@ -428,9 +445,12 @@ function simLoop(ts){
 }
 if(DEV){
   $('dev').hidden=false;
+  $('dMin').onclick=()=>{const kids=[...$('dev').children].slice(1);const fold=!kids[0].hidden;kids.forEach(k=>k.hidden=fold);$('dMin').textContent=fold?'펴기':'접기';$('dev').style.width=fold?'auto':'';};
   $('dSim').onclick=()=>{sim.on=true;log('시뮬레이션 켬');};$('dGps').onclick=()=>{sim.on=false;log('GPS');};
   $('dRun').onclick=()=>{sim.on=true;sim.go=true;};$('dStop').onclick=()=>{sim.go=false;};
-  $('dOff').onclick=()=>{sim.off=sim.off?0:150;log(sim.off?'이탈 흉내 시작':'이탈 흉내 끝');};
+  $('dOff').onclick=()=>{sim.on=true;sim.off=sim.off?0:150;log(sim.off?'이탈 흉내 시작 (12초 뒤 화면)':'이탈 흉내 끝');};
+  $('dShowOff').onclick=()=>{const h=$('scrOff').hidden;$('scrOff').hidden=!h;$('dShowOff').textContent=h?'이탈 화면 닫기':'이탈 화면 바로 보기';};
+  $('dShowArr').onclick=()=>{const h=$('scrArrive').hidden;$('scrArrive').hidden=!h;$('dShowArr').textContent=h?'도착 화면 닫기':'도착 화면 바로 보기';};
   $('dSpd').oninput=e=>{sim.kmh=+e.target.value;$('dSpdL').textContent=sim.kmh;};
   requestAnimationFrame(simLoop);
 }
